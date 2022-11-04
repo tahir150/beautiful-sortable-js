@@ -1,12 +1,16 @@
-const getUtils = function (config) {
+const getUtils = function (config = {}) {
   return {
     cssClasses: {
       grabbingClass: "cursor-grabbing",
       noUserSelection: "no-user-selection",
       clonedPreview: "sorting-clone-preview",
       sortingItem: "current-sorting",
+      cloneMoving: "clone-moving",
+      sortMoving: "sort-moving",
       sortable: "sortable",
       containment: "sortable-containment",
+      appendableClasss: "sort-appendable",
+      defaultHeight: "default-height",
     },
     sortableFigures: {
       mouseX: 0,
@@ -32,19 +36,32 @@ const getUtils = function (config) {
                     .${this.cssClasses.containment} {
                         scroll-behavior: smooth;
                     }
-                    .${this.cssClasses.sortable} {
+                    .${this.cssClasses.sortable} , .${this.cssClasses.sortable}:hover {
                         cursor: grab;
                     }
                     .${this.cssClasses.sortable}.${this.cssClasses.grabbingClass}:hover {
-                    cursor: grabbing;
+                        cursor: grabbing;
                     }
                     .${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {
                         user-select: none !important;
                     }
-                    .${this.cssClasses.sortingItem} {
+                    .${this.cssClasses.sortMoving} {
+                        background: #00000094 !important;
+                        opacity: 0.7;
+                    }
+                    .${this.cssClasses.sortMoving} *{
                         opacity: 0 !important;
                     }
-                      `;
+                    .${this.cssClasses.cloneMoving} {
+                        opacity: 0.7;
+                    }
+                    .${this.cssClasses.appendableClasss} {
+                      border: solid 1px gray;
+                    }
+                    .${this.cssClasses.defaultHeight} {
+                      min-height: 30px;
+                      padding: 8px;
+                    }`;
 
         const style = document.createElement("style");
         style.dataset.sortableCss = true;
@@ -79,7 +96,8 @@ const getUtils = function (config) {
         clonedItem.style.margin = 0;
         clonedItem.style.boxSizing = "border-box";
         clonedItem.style.userSelect = "none";
-        clonedItem.classList.add(this.cssClasses.clonedPreview);
+        this.updateClass(clonedItem, this.cssClasses.clonedPreview);
+        this.updateClass(clonedItem, config.draggingClass);
         return clonedItem;
       };
 
@@ -114,35 +132,54 @@ const getUtils = function (config) {
       return { top, left };
     },
 
-    applyInitalClasses(element) {
-      element?.classList.add(this.cssClasses.sortable);
-      if (config.containment) {
-        config.containment.classList.add(this.cssClasses.containment);
+    handleDefaultHeight(element) {
+      if (element) {
+        const shouldShowHeight =
+          parseInt(getComputedStyle(element).height) < 30;
+        if (shouldShowHeight) {
+          this.updateClass(element, this.cssClasses.defaultHeight);
+        }
       }
     },
 
-    updateClass(element, classToRemove, action = "add") {
-      element?.classList[action](classToRemove);
+    applyInitalClasses(element) {
+      this.updateClass(element, this.cssClasses.sortable);
+      this.updateClass(element, config.itemClass);
+      const scrollParent = config.containment || element.parentElement;
+      if (scrollParent) {
+        this.sortableFigures.sortableParent = scrollParent;
+        this.updateClass(scrollParent, this.cssClasses.containment);
+      }
+
+      if (config.appendableClasses) {
+        if (typeof config.appendableClasses === "string") {
+          config.appendableClasses.split(",").forEach((cls) => {
+            document.querySelectorAll("." + cls).forEach((el) => {
+              this.updateClass(el, this.cssClasses.appendableClasss);
+              this.handleDefaultHeight(el);
+            });
+          });
+        } else {
+          console.error(
+            "you must provide a commma(,) seperated string for appendable classes"
+          );
+        }
+      }
+    },
+
+    updateClass(element, cssClass, action = "add") {
+      if (cssClass) {
+        element?.classList[action](cssClass);
+      }
     },
 
     initMouseDown(event, element, clonedItem) {
       if (element) {
-        const scrollParent = config.containment || element.parentElement;
-        const scrollTop = scrollParent?.scrollTop;
-        const scrollLeft = scrollParent?.scrollLeft;
-        const { left, top } = this.getElementPosition(
-          element,
-          config.containment
-        );
-
         // Ading classes to element
         this.updateClass(element, this.cssClasses.grabbingClass);
         this.updateClass(element, this.cssClasses.sortingItem);
-        // Initial values
-        this.sortableFigures.sortableParent = scrollParent;
-        this.sortableFigures.initial.elementPosition = { left, top };
-        this.sortableFigures.initial.scrollY = scrollTop;
-        this.sortableFigures.initial.scrollX = scrollLeft;
+        // Initial element's position
+        this.updateElementsInitialPosition(element);
       }
       if (clonedItem) {
         this.updateClass(clonedItem, this.cssClasses.grabbingClass);
@@ -172,6 +209,19 @@ const getUtils = function (config) {
         parent.onscroll = setPositionByScroll;
       }
       this.updateClass(document.body, this.cssClasses.noUserSelection);
+    },
+
+    updateElementsInitialPosition(element) {
+      const scrollTop = this.sortableFigures.sortableParent?.scrollTop;
+      const scrollLeft = this.sortableFigures.sortableParent?.scrollLeft;
+      const { left, top } = this.getElementPosition(
+        element,
+        config.containment
+      );
+
+      this.sortableFigures.initial.elementPosition = { left, top };
+      this.sortableFigures.initial.scrollY = scrollTop;
+      this.sortableFigures.initial.scrollX = scrollLeft;
     },
 
     movePreview(event) {
@@ -207,6 +257,58 @@ const getUtils = function (config) {
       this.sortableFigures.mouseX = event.pageX;
     },
 
+    sortElement(event, sortingElement) {
+      const { pageX, pageY } = event;
+      const pointElements = document.elementsFromPoint(pageX, pageY);
+      const pointedElement = pointElements.find((el) => {
+        return (
+          !el.classList.contains(this.cssClasses.clonedPreview) &&
+          !el.classList.contains(this.cssClasses.sortingItem) &&
+          el.classList.contains(this.cssClasses.sortable) &&
+          !el.closest(this.cssClasses.sortMoving)
+        );
+      });
+
+      // if it is valid and can enter to element then start Sort from it
+      if (pointedElement) {
+        const elementRect = pointedElement.getBoundingClientRect();
+        const elementMiddleY = elementRect.y + elementRect.height / 2;
+
+        if (elementMiddleY < pageY / config.zoom) {
+          pointedElement.after(sortingElement);
+        } else {
+          pointedElement.before(sortingElement);
+        }
+      } else {
+        // if no matching sortable element found then found if it is moving in container then append it
+        const pointingSortingElement = pointElements.find((el) =>
+          el.classList.contains(this.cssClasses.sortingItem)
+        );
+
+        if (!pointingSortingElement) {
+          // Parent containment OR user Selected appendable
+          const containment = pointElements.find((el) =>
+            el.classList.contains(this.cssClasses.containment)
+          );
+
+          const appendable = pointElements.find((el) =>
+            el.classList.contains(this.cssClasses.appendableClasss)
+          );
+
+          const appendableContainment = appendable || containment;
+
+          if (appendableContainment) {
+            const alreadyHaveSortEle = [
+              ...appendableContainment.children,
+            ].includes(sortingElement);
+            if (!alreadyHaveSortEle) {
+              appendableContainment.append(sortingElement);
+            }
+          }
+        }
+      }
+    },
+
     terminateMouseDown(element, clonedItem) {
       const transitionDuration = "0.5s";
       const transitionTimeout = parseFloat(transitionDuration) * 1000;
@@ -232,12 +334,17 @@ const getUtils = function (config) {
         clonedItem.style.left = left + "px";
         setTimeout(() => {
           clonedItem.remove();
+          this.updateClass(element, this.cssClasses.sortMoving, "remove");
         }, transitionTimeout);
       } else console.error("cloned not found !");
       if (config.containment) {
         config.containment.onscroll = null;
       }
-      this.updateClass(document.body, this.cssClasses.grabbingClass, "remove");
+      this.updateClass(
+        document.body,
+        this.cssClasses.noUserSelection,
+        "remove"
+      );
     },
   };
 };
@@ -253,6 +360,9 @@ function Sortable(element, paramConfig = {}) {
   const defaultConfig = {
     containment: null,
     zoom: 1,
+    draggingClass: "",
+    itemClass: "",
+    appendableClasses: "sort-container",
   };
   const config = {
     ...defaultConfig,
@@ -269,7 +379,14 @@ function Sortable(element, paramConfig = {}) {
   // Sortable Functionality
   const onMouseMove = (e) => {
     e.stopPropagation();
+    utils.updateClass(
+      utils.sortableFigures.clonedPreview,
+      utils.cssClasses.cloneMoving
+    );
+    utils.updateClass(element, utils.cssClasses.sortMoving);
     utils.movePreview(e);
+    utils.sortElement(e, element);
+    utils.updateElementsInitialPosition(element);
   };
 
   const onMouseDown = (e) => {
