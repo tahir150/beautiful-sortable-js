@@ -3,9 +3,10 @@ const getUtils = function (config = {}) {
     cssClasses: {
       grabbingClass: "cursor-grabbing",
       noUserSelection: "no-user-selection",
-      clonedPreview: "sorting-clone-preview",
       sortingItem: "current-sorting",
+      clonedPreview: "sorting-clone-preview",
       cloneMoving: "clone-moving",
+      cloned: "cloned",
       sortMoving: "sort-moving",
       sortable: "sortable",
       containment: "sortable-containment",
@@ -76,7 +77,7 @@ const getUtils = function (config = {}) {
       }
     },
 
-    getClone(element, containment) {
+    getClone(element, containment, cloneClass = true) {
       const clonedItem = (itemToClone, wrapper) => {
         const itemRect = itemToClone.getBoundingClientRect();
         const clonedItem = itemToClone.cloneNode(true);
@@ -98,6 +99,12 @@ const getUtils = function (config = {}) {
         clonedItem.style.userSelect = "none";
         this.updateClass(clonedItem, this.cssClasses.clonedPreview);
         this.updateClass(clonedItem, config.draggingClass);
+        if (cloneClass) {
+          this.updateClass(clonedItem, this.cssClasses.cloned);
+          clonedItem.querySelectorAll("*").forEach((clone) => {
+            this.updateClass(clone, this.cssClasses.cloned);
+          });
+        }
         return clonedItem;
       };
 
@@ -260,52 +267,79 @@ const getUtils = function (config = {}) {
     sortElement(event, sortingElement) {
       const { pageX, pageY } = event;
       const pointElements = document.elementsFromPoint(pageX, pageY);
-      const pointedElement = pointElements.find((el) => {
-        return (
-          !el.classList.contains(this.cssClasses.clonedPreview) &&
-          !el.classList.contains(this.cssClasses.sortingItem) &&
-          el.classList.contains(this.cssClasses.sortable) &&
-          !el.closest(this.cssClasses.sortMoving)
-        );
-      });
+      const lastClonedEleIndex = pointElements.findLastIndex((el) =>
+        el.classList.contains(this.cssClasses.cloned)
+      );
+
+      const isHaveThisSorting = (parent, child) => {
+        return parent === child?.parentElement;
+      };
+
+      const pointedElement = pointElements[lastClonedEleIndex + 1];
+
+      const isSortableElement =
+        !pointedElement?.classList.contains(this.cssClasses.sortingItem) &&
+        !pointedElement?.closest("." + this.cssClasses.sortingItem) &&
+        pointedElement?.classList.contains(this.cssClasses.sortable);
+
+      //<== CONTAINMENT CODE
+      const sortableContainment = pointElements.find((el) =>
+        el?.classList.contains(this.cssClasses.containment)
+      );
+      const configContainment = pointElements.find(
+        (el) =>
+          el?.classList.contains(this.cssClasses.appendableClasss) &&
+          !el?.classList.contains(this.cssClasses.clonedPreview)
+      );
+      const appendableContainment = configContainment || sortableContainment;
+
+      const appendableHandler = () => {
+        if (appendableContainment) {
+          const canAppendToEle =
+            appendableContainment !== sortingElement &&
+            !appendableContainment.classList.contains(
+              this.cssClasses.clonedPreview
+            );
+          if (
+            !isHaveThisSorting(appendableContainment, sortingElement) &&
+            canAppendToEle
+          ) {
+            appendableContainment.append(sortingElement);
+            // if (configContainment) {
+            //   // showing hover class if it is user selected containment
+            // }
+          }
+        }
+      };
+      //<== CONTAINMENT CODE
 
       // if it is valid and can enter to element then start Sort from it
-      if (pointedElement) {
-        const elementRect = pointedElement.getBoundingClientRect();
-        const elementMiddleY = elementRect.y + elementRect.height / 2;
+      if (isSortableElement) {
+        const sortTheElement = () => {
+          const elementRect = pointedElement.getBoundingClientRect();
+          const elementMiddleY = elementRect.y + elementRect.height / 2;
 
-        if (elementMiddleY < pageY / config.zoom) {
-          pointedElement.after(sortingElement);
-        } else {
-          pointedElement.before(sortingElement);
+          if (elementMiddleY < pageY / config.zoom) {
+            pointedElement.after(sortingElement);
+          } else {
+            pointedElement.before(sortingElement);
+          }
+        };
+        sortTheElement();
+
+        if (appendableContainment && pointedElement === appendableContainment) {
+          if (isHaveThisSorting(appendableContainment, pointedElement)) {
+            sortTheElement();
+            // console.log("sorting inside container");
+          } else {
+            appendableHandler();
+            // console.log("appending");
+          }
         }
       } else {
         // if no matching sortable element found then found if it is moving in container then append it
-        const pointingSortingElement = pointElements.find((el) =>
-          el.classList.contains(this.cssClasses.sortingItem)
-        );
-
-        if (!pointingSortingElement) {
-          // Parent containment OR user Selected appendable
-          const containment = pointElements.find((el) =>
-            el.classList.contains(this.cssClasses.containment)
-          );
-
-          const appendable = pointElements.find((el) =>
-            el.classList.contains(this.cssClasses.appendableClasss)
-          );
-
-          const appendableContainment = appendable || containment;
-
-          if (appendableContainment) {
-            const alreadyHaveSortEle = [
-              ...appendableContainment.children,
-            ].includes(sortingElement);
-            if (!alreadyHaveSortEle) {
-              appendableContainment.append(sortingElement);
-            }
-          }
-        }
+        // Parent containment OR user Selected appendable
+        appendableHandler();
       }
     },
 

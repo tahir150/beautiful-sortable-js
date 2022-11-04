@@ -9,7 +9,7 @@ divsToSort.forEach((item, i) => {
     // itemClass: "tahir",
     // draggingClass : "tahir"
     // zoom: 0.5,
-    appendableClasses: "sort-container",
+    // appendableClasses: "sort-container",
   });
   //   }
   //   sortable.disable();
