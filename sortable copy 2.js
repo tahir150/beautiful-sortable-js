@@ -1,16 +1,4 @@
 const getUtils = function (config = {}) {
-  // first checking if all configs are valid
-  const throwError = (message) => {
-    const error = new Error(message);
-    error.name = "Sortable JS";
-    throw error;
-  };
-
-  // Checking if not an error
-  if (false) {
-    throwError("bhai error agaya hai niklo");
-  }
-
   return {
     cssClasses: {
       grabbingClass: "cursor-grabbing",
@@ -24,26 +12,13 @@ const getUtils = function (config = {}) {
       containment: "sortable-containment",
       appendableClasss: "sort-appendable",
       defaultHeight: "default-height",
-      fallBackElement: "fallback-element",
-      fallBackPreview: "fallback-preview",
-      fallBackClone: "fallback-clone",
     },
     sortableFigures: {
       mouseX: 0,
       mouseY: 0,
-      windowScroll: {
-        x: 0,
-        y: 0,
-      },
       clonedPreview: null,
       sortableParent: null,
-      orignalFallback: null,
-      fallBackElement: null,
-      fallBackClone: null,
-      cloneDistance: {
-        y: 0,
-        x: 0,
-      },
+      clonedRect: {},
       initial: {
         scrollY: 0,
         scrollX: 0,
@@ -51,10 +26,6 @@ const getUtils = function (config = {}) {
           left: 0,
           top: 0,
         },
-      },
-      itemDetails: {
-        startedFrom: {},
-        endedOn: {},
       },
     },
 
@@ -77,7 +48,7 @@ const getUtils = function (config = {}) {
                     }
                     .${this.cssClasses.sortMoving} {
                         background: #00000094 !important;
-                        opacity: 0.5;
+                        opacity: 0.7;
                     }
                     .${this.cssClasses.sortMoving} *{
                         opacity: 0 !important;
@@ -88,7 +59,8 @@ const getUtils = function (config = {}) {
                     .${this.cssClasses.appendableClasss} {
                       border: solid 1px gray;
                     }
-                    .${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {
+                    .${this.cssClasses.defaultHeight} {
+                      min-height: 30px;
                       padding: 8px;
                     }`;
 
@@ -105,55 +77,48 @@ const getUtils = function (config = {}) {
       }
     },
 
-    getClone(element) {
-      const clonedItem = (itemToClone) => {
+    getClone(element, containment, cloneClass = true) {
+      const clonedItem = (itemToClone, wrapper) => {
         const itemRect = itemToClone.getBoundingClientRect();
         const clonedItem = itemToClone.cloneNode(true);
-        const { top, left } = this.getElementPosition(element);
-
-        clonedItem.style.position = "fixed";
-        clonedItem.style.top = top + "px";
-        clonedItem.style.left = left + "px";
+        const { top, left } = this.getElementPosition(element, wrapper);
+        if (wrapper) {
+          wrapper.style.position = "relative";
+          clonedItem.style.position = "absolute";
+          clonedItem.style.top = top + "px";
+          clonedItem.style.left = left + "px";
+        } else {
+          clonedItem.style.position = "fixed";
+          clonedItem.style.top = top + "px";
+          clonedItem.style.left = left + "px";
+        }
 
         clonedItem.style.width = itemRect.width + "px";
         clonedItem.style.margin = 0;
-        clonedItem.style.zIndex = 1000;
-        clonedItem.style.pointerEvents = "none";
         clonedItem.style.boxSizing = "border-box";
         clonedItem.style.userSelect = "none";
         this.updateClass(clonedItem, this.cssClasses.clonedPreview);
         this.updateClass(clonedItem, config.draggingClass);
+        if (cloneClass) {
+          this.updateClass(clonedItem, this.cssClasses.cloned);
+          clonedItem.querySelectorAll("*").forEach((clone) => {
+            this.updateClass(clone, this.cssClasses.cloned);
+          });
+        }
         return clonedItem;
       };
 
-      const clonedPreview = clonedItem(element);
-      // else append to first sortable element's parent
-      element?.after(clonedPreview);
-      return clonedPreview;
-    },
-
-    throwError(e) {
-      console.error(new Error(e));
-    },
-
-    getItemDetail(element) {
-      const parent = element.parentNode;
-      if (!element || !parent) {
-        return {};
+      const clonedPreview = clonedItem(element, containment);
+      if (containment) {
+        containment.append(clonedPreview);
+      } else {
+        // else append to first sortable element's parent
+        const firstSortable = document.querySelector(
+          `.${this.cssClasses.sortable}`
+        );
+        firstSortable?.after(clonedPreview);
       }
-      const index = Array.from(parent.children).indexOf(element);
-      const detail = { element, index, parent };
-      return detail;
-    },
-
-    anyChange({ startedFrom, endedOn }) {
-      let isAnyChange = false;
-      Object.keys(startedFrom).forEach((key) => {
-        if (startedFrom[key] !== endedOn[key]) {
-          isAnyChange = true;
-        }
-      });
-      return isAnyChange;
+      return clonedPreview;
     },
 
     getElementPosition(element, wrapper) {
@@ -184,13 +149,10 @@ const getUtils = function (config = {}) {
       }
     },
 
-    setInitalData(element) {
+    applyInitalClasses(element) {
       this.updateClass(element, this.cssClasses.sortable);
       this.updateClass(element, config.itemClass);
-      const scrollParent =
-        element.closest("." + this.cssClasses.appendableClasss) ||
-        element.parentElement;
-
+      const scrollParent = config.containment || element.parentElement;
       if (scrollParent) {
         this.sortableFigures.sortableParent = scrollParent;
         this.updateClass(scrollParent, this.cssClasses.containment);
@@ -204,12 +166,11 @@ const getUtils = function (config = {}) {
               this.handleDefaultHeight(el);
             });
           });
+        } else {
+          console.error(
+            "you must provide a commma(,) seperated string for appendable classes"
+          );
         }
-      }
-
-      if (config.fallBackElement) {
-        config.fallBackElement.classList.add(this.cssClasses.fallBackPreview);
-        this.sortableFigures.orignalFallback = config.fallBackElement;
       }
     },
 
@@ -222,31 +183,50 @@ const getUtils = function (config = {}) {
     initMouseDown(event, element, clonedItem) {
       if (element) {
         // Ading classes to element
-        const startFrom = this.getItemDetail(element);
         this.updateClass(element, this.cssClasses.grabbingClass);
         this.updateClass(element, this.cssClasses.sortingItem);
         // Initial element's position
         this.updateElementsInitialPosition(element);
-        this.sortableFigures.itemDetails.startedFrom = startFrom;
-        config.onStart({ startFrom });
       }
       if (clonedItem) {
         this.updateClass(clonedItem, this.cssClasses.grabbingClass);
         this.sortableFigures.mouseY = event.pageY;
         this.sortableFigures.mouseX = event.pageX;
-        // getting initial body scroll
-        this.sortableFigures.windowScroll = {
-          x: window.scrollX,
-          y: window.scrollY,
-        };
       }
+      if (config.containment && clonedItem) {
+        const parent = config.containment;
+        let scrollTop = parent?.scrollTop;
+        let scrollLeft = parent?.scrollLeft;
+        parent.style.overflowX = "hidden";
 
+        const setPositionByScroll = (e) => {
+          const { left: itemLeft, top: itemTop } = clonedItem.style;
+          const eventScrollTop = e.target.scrollTop;
+          const eventScrollLeft = e.target.scrollLeft;
+          const scrollDiffY = eventScrollTop - scrollTop;
+          const scrollDiffX = eventScrollLeft - scrollLeft;
+          const newTop = parseFloat(itemTop) + scrollDiffY;
+          const newLeft = parseFloat(itemLeft) + scrollDiffX;
+          clonedItem.style.top = newTop + "px";
+          clonedItem.style.left = newLeft + "px";
+          scrollTop = eventScrollTop;
+          scrollLeft = eventScrollLeft;
+        };
+
+        parent.onscroll = setPositionByScroll;
+      }
       this.updateClass(document.body, this.cssClasses.noUserSelection);
     },
 
     updateElementsInitialPosition(element) {
       const scrollTop = this.sortableFigures.sortableParent?.scrollTop;
       const scrollLeft = this.sortableFigures.sortableParent?.scrollLeft;
+      const { left, top } = this.getElementPosition(
+        element,
+        config.containment
+      );
+
+      this.sortableFigures.initial.elementPosition = { left, top };
       this.sortableFigures.initial.scrollY = scrollTop;
       this.sortableFigures.initial.scrollX = scrollLeft;
     },
@@ -255,44 +235,50 @@ const getUtils = function (config = {}) {
       const clonedPreview = this.sortableFigures.clonedPreview;
       const mouseDiffY = this.sortableFigures.mouseY - event.pageY;
       const mouseDiffX = this.sortableFigures.mouseX - event.pageX;
-      let { y, x } = this.sortableFigures.cloneDistance;
+      const { x: itemXDistance, y: itemYDistance } =
+        this.sortableFigures.clonedRect;
 
-      // if Scroll has change, add to element's position
-      const currentScrollX = window.scrollX;
-      const currentScrollY = window.scrollY;
-      const { x: initSx, y: initSy } = this.sortableFigures.windowScroll;
+      const getMousePosition = () => {
+        let left = event.pageX / config.zoom - itemXDistance - mouseDiffX;
+        let top = event.pageY / config.zoom - itemYDistance - mouseDiffY;
 
-      if (currentScrollX !== initSx) {
-        const xDiff = currentScrollX - initSx;
-        this.sortableFigures.windowScroll.x = currentScrollX;
-        x = x - xDiff;
-      }
-      if (currentScrollY !== initSy) {
-        const yDiff = currentScrollY - initSy;
-        this.sortableFigures.windowScroll.y = currentScrollY;
-        y = y - yDiff;
-      }
+        if (config.containment) {
+          const parent = config.containment;
+          const parentRect = parent.getBoundingClientRect();
+          const scrollTop = parent.scrollTop;
+          const scrollLeft = parent.scrollLeft;
+          left = left - parentRect.x + scrollLeft;
+          top = top - parentRect.y + scrollTop;
+          return { left, top };
+        }
+        return { left, top };
+      };
 
-      let left = event.pageX / config.zoom - mouseDiffX;
-      let top = event.pageY / config.zoom - mouseDiffY;
+      const { left, top } = getMousePosition();
 
-      clonedPreview.style.left = left - x + "px";
-      clonedPreview.style.top = top - y + "px";
+      clonedPreview.style.left = left + "px";
+      clonedPreview.style.top = top + "px";
 
       // ReAssigning new value to take a difference
       this.sortableFigures.mouseY = event.pageY;
       this.sortableFigures.mouseX = event.pageX;
+
+      return mouseDiffY > 0;
     },
 
-    sortElement(event, sortingElement) {
-      const { clientX: pageX, clientY: pageY } = event;
+    sortElement(event, sortingElement, isMouseGoUp) {
+      const { pageX, pageY } = event;
       const pointElements = document.elementsFromPoint(pageX, pageY);
+      // console.log(pointElements);
+      const lastClonedEleIndex = pointElements.findLastIndex((el) =>
+        el.classList.contains(this.cssClasses.cloned)
+      );
 
-      const isHaveThisAppendable = (parent, child) => {
+      const isHaveThisSorting = (parent, child) => {
         return parent === child?.parentElement;
       };
 
-      const pointedElement = pointElements[0];
+      const pointedElement = pointElements[lastClonedEleIndex + 1];
 
       const isSortableElement =
         !pointedElement?.classList.contains(this.cssClasses.sortingItem) &&
@@ -310,170 +296,95 @@ const getUtils = function (config = {}) {
       );
 
       const appendableContainment = configContainment || sortableContainment;
+      console.log(configContainment);
 
-      /// <== GET FALLBACK ELEMENT CODE
-      const getFallbackElement = () => {
-        const fallbackEle = this.sortableFigures.orignalFallback;
-        if (fallbackEle) {
-          // if any fallback element than remove it and below add new one
-          const lastEle = this.sortableFigures.fallBackElement;
-          if (
-            lastEle?.classList.contains(this.cssClasses.fallBackPreview) &&
-            this.sortableFigures.itemDetails.startedFrom.parent ===
-              appendableContainment
-          ) {
-            lastEle.remove();
-          }
-
-          if (config.fallBackClone) {
-            const lastCloned = this.sortableFigures.fallBackClone;
-            const canClone = !lastCloned?.classList.contains(
-              this.cssClasses.fallBackClone
-            );
-
-            if (canClone) {
-              const clone = fallbackEle.cloneNode(true);
-              this.sortableFigures.fallBackClone = clone;
-              this.sortableFigures.fallBackElement = clone;
-              this.updateClass(clone, this.cssClasses.fallBackClone);
-              return clone;
-            } else {
-              return lastCloned;
-            }
-          }
-
-          this.sortableFigures.fallBackElement = fallbackEle;
-          return fallbackEle;
-        }
-        return false;
-      };
-
-      const fallBackElement = getFallbackElement();
-      const fallbackRequirementsMeet = () => {
-        if (fallBackElement) {
-          this.sortableFigures.itemDetails.startedFrom.parent !==
-            appendableContainment;
-          if (
-            this.sortableFigures.itemDetails.startedFrom.parent !==
-            appendableContainment
-          ) {
-            return true;
-          }
-        }
-      };
-      /// <== GET FALLBACK ELEMENT CODE END
+      const isContainment =
+        appendableContainment && pointedElement === appendableContainment;
 
       const appendableHandler = () => {
-        const appendElement = (appendable) => {
-          const eleToAppend = appendable || sortingElement;
+        if (appendableContainment) {
           const canAppendToEle =
-            appendableContainment !== eleToAppend &&
+            appendableContainment !== sortingElement &&
             !appendableContainment.classList.contains(
               this.cssClasses.clonedPreview
-            ) &&
-            !eleToAppend.closest("." + this.cssClasses.appendableClasss);
-
+            );
           if (
-            !isHaveThisAppendable(appendableContainment, eleToAppend) &&
+            !isHaveThisSorting(appendableContainment, sortingElement) &&
             canAppendToEle
           ) {
-            appendableContainment.append(eleToAppend);
+            appendableContainment.append(sortingElement);
+            // if (configContainment) {
+            //   // showing hover class if it is user selected containment
+            // }
           }
-        };
-        // if any fallback element is present then check if same container
-        if (fallBackElement) {
-          if (fallbackRequirementsMeet()) {
-            appendElement(fallBackElement);
-          }
-          // else it can append or sort anywhere
-        } else {
-          appendElement();
         }
       };
       //<== CONTAINMENT CODE
 
-      // SORTING AND APPENDING CODE
       // <== Sortable Functionality
       const sortTheElement = () => {
-        const sortElement = (sortable) => {
-          const eleToSort = sortable || sortingElement;
-          const elementRect = pointedElement.getBoundingClientRect();
-          const elementMiddleY = elementRect.y + elementRect.height / 2;
-          const notInnerConntainment = !pointedElement.classList.contains(
-            // preventing for inner containment
-            this.cssClasses.appendableClasss
-          );
+        const elementRect = pointedElement.getBoundingClientRect();
+        const elementMiddleY = elementRect.y + elementRect.height / 2;
 
-          if (notInnerConntainment) {
-            if (elementMiddleY < pageY / config.zoom) {
-              pointedElement.after(eleToSort);
-            } else {
-              pointedElement.before(eleToSort);
-            }
-          }
-        };
-
-        // If fallback then not for same parent
-        if (fallBackElement) {
-          if (fallbackRequirementsMeet()) {
-            sortElement(fallBackElement);
-          }
-          // else it can append or sort anywhere
+        if (elementMiddleY < pageY / config.zoom) {
+          // console.log("after");
+          pointedElement.after(sortingElement);
         } else {
-          sortElement();
+          // console.log("before");
+          pointedElement.before(sortingElement);
         }
+        // console.log("sorted from", pointedElement);
       };
-      // <== Sortable Functionality Ends
+      // <== Sortable Functionality
 
-      // <== Appendable Functionality
+      // if it is valid and can enter to element then start Sort from it
       if (appendableContainment) {
+        // // if no matching sortable element found then found if it is moving in container then append it
+        // // Parent containment OR user Selected appendable
+        // console.log("ouer else");
         if (configContainment) {
-          // inner containment
-          const boundaryGap = 10;
           const { top, bottom } = configContainment.getBoundingClientRect();
-          const hittedTop = pageY >= top && pageY < top + boundaryGap;
-          const hittedBottom = pageY <= bottom && pageY > bottom - boundaryGap;
-          const touchingBoundaries = hittedTop || hittedBottom;
+          // console.log(top, pageY, bottom);
+          const marginGap = 10;
+          const hittedTop = pageY >= top && pageY < top + marginGap;
+          const hittedBottom = pageY <= bottom && pageY > bottom - marginGap;
+          if (hittedTop) {
+            // console.log("hitted before");
+            // configContainment.before(sortingElement);
+            appendableHandler();
+          } else if (hittedBottom) {
+            // console.log("hitted after");
+            // configContainment.after(sortingElement);
+            appendableHandler();
+          } else {
+            // console.log("append");
+            appendableHandler();
+            // sortTheElement();
+          }
+        }
+      } else {
+        console.log("else");
+        if (isSortableElement) {
+          sortTheElement();
 
-          if (isSortableElement) {
-            if (touchingBoundaries) {
-              const isNotEmpty = configContainment.querySelector(
-                "." + this.cssClasses.sortable
-              );
-              // if not empty then run thouching boundaries code
-              if (isNotEmpty) {
-                if (hittedTop) {
-                  configContainment.before(sortingElement);
-                } else {
-                  configContainment.after(sortingElement);
-                }
-              } else {
-                // if Empty then append at least 1 element first
-                appendableHandler();
-              }
+          if (isContainment) {
+            if (isHaveThisSorting(appendableContainment, pointedElement)) {
+              // sortTheElement();
+              console.log("sorting inside container");
             } else {
-              sortTheElement();
+              // setTimeout(() => {
+              appendableHandler();
+              // }, 1000);
+              // console.log("appending");
             }
-          } else {
-            appendableHandler();
           }
-        } else {
-          // Outer containment
-          if (isSortableElement) {
-            // outside container + sortable
-            sortTheElement();
-          } else {
-            // outside container
-            appendableHandler();
-          }
+          console.log("ouer if");
         }
       }
-      // <== Appendable Functionality Ends
-      // SORTING AND APPENDING CODE  ENDED !
     },
 
     terminateMouseDown(element, clonedItem) {
-      const transitionDuration = "0.3s";
+      const transitionDuration = "0.5s";
       const transitionTimeout = parseFloat(transitionDuration) * 1000;
       if (element) {
         // Scrolling into view where user have started sort
@@ -484,19 +395,6 @@ const getUtils = function (config = {}) {
           behavior: "smooth",
         });
 
-        const isFallbackElement = this.sortableFigures.fallBackElement;
-        if (isFallbackElement) {
-          const endedItemDetail = this.getItemDetail(
-            this.sortableFigures.fallBackElement
-          );
-          this.sortableFigures.itemDetails.endedOn = endedItemDetail;
-          this.sortableFigures.fallBackElement = null;
-          this.sortableFigures.fallBackClone = null;
-        } else {
-          this.sortableFigures.itemDetails.endedOn =
-            this.getItemDetail(element);
-        }
-
         setTimeout(() => {
           this.updateClass(element, this.cssClasses.grabbingClass, "remove");
           this.updateClass(element, this.cssClasses.sortingItem, "remove");
@@ -505,13 +403,9 @@ const getUtils = function (config = {}) {
       if (clonedItem) {
         this.updateClass(clonedItem, this.cssClasses.grabbingClass, "remove");
         clonedItem.style.transition = `${transitionDuration}`;
-        const { top, left } = this.getElementPosition(
-          element,
-          config.containment
-        );
+        const { top, left } = this.sortableFigures.initial.elementPosition;
         clonedItem.style.top = top + "px";
         clonedItem.style.left = left + "px";
-        clonedItem.style.width = getComputedStyle(element).width;
         setTimeout(() => {
           clonedItem.remove();
           this.updateClass(element, this.cssClasses.sortMoving, "remove");
@@ -520,22 +414,11 @@ const getUtils = function (config = {}) {
       if (config.containment) {
         config.containment.onscroll = null;
       }
-      const { itemDetails } = this.sortableFigures;
-      if (itemDetails.endedOn?.element && this.anyChange(itemDetails)) {
-        config.onSort(itemDetails);
-      }
-      config.onDrop(itemDetails);
       this.updateClass(
         document.body,
         this.cssClasses.noUserSelection,
         "remove"
       );
-
-      if (config.fallBackElement) {
-        this.sortableFigures.fallBackClone?.classList.remove(
-          this.cssClasses.fallBackClone
-        );
-      }
     },
   };
 };
@@ -553,11 +436,7 @@ function Sortable(element, paramConfig = {}) {
     zoom: 1,
     draggingClass: "",
     itemClass: "",
-    appendableClasses: "",
-    fallBackClone: true,
-    onStart: () => {},
-    onSort: () => {},
-    onDrop: () => {},
+    appendableClasses: "sort-container",
   };
   const config = {
     ...defaultConfig,
@@ -565,38 +444,13 @@ function Sortable(element, paramConfig = {}) {
   };
 
   //utils
-  // let utils = {};
-  // try {
-  //   utils = getUtils(config);
-  // } catch (e) {
-  //   return console.error(e);
-  // }
   const utils = getUtils(config);
+
   // Inecting Css Style to head
   utils.injectCss();
-  utils.setInitalData(element);
+  utils.applyInitalClasses(element);
 
   // Sortable Functionality
-  const onMouseDown = (e) => {
-    e.stopPropagation();
-    // getting clone of Element to it's position for preview
-    const clonedPreview = utils.getClone(element);
-    utils.sortableFigures.clonedPreview = clonedPreview;
-    const distance = {};
-    const { pageX, pageY } = e;
-    const item = e.currentTarget;
-    const { x: itemX, y: itemY } = item.getBoundingClientRect();
-    distance.y = pageY / config.zoom - itemY;
-    distance.x = pageX / config.zoom - itemX;
-    utils.sortableFigures.cloneDistance = distance;
-    // initial mousedown configurations
-    utils.initMouseDown(e, element, clonedPreview);
-    // then start moving it following mouse position
-    document.addEventListener("mousemove", onMouseMove);
-    // adding mouseup listener
-    document.addEventListener("mouseup", removeListeners);
-  };
-
   const onMouseMove = (e) => {
     e.stopPropagation();
     utils.updateClass(
@@ -604,9 +458,27 @@ function Sortable(element, paramConfig = {}) {
       utils.cssClasses.cloneMoving
     );
     utils.updateClass(element, utils.cssClasses.sortMoving);
-    utils.movePreview(e);
-    utils.sortElement(e, element);
+    const isMouseGoUp = utils.movePreview(e);
+    utils.sortElement(e, element, isMouseGoUp);
     utils.updateElementsInitialPosition(element);
+  };
+
+  const onMouseDown = (e) => {
+    e.stopPropagation();
+    // getting clone of Element to it's position for preview
+    const clonedPreview = utils.getClone(element, config.containment);
+    utils.sortableFigures.clonedPreview = clonedPreview;
+    const clonedRect = clonedPreview.getBoundingClientRect();
+    clonedRect.x = e.pageX / config.zoom - clonedRect.x;
+    clonedRect.y = e.pageY / config.zoom - clonedRect.y;
+    utils.sortableFigures.clonedPreview = clonedPreview;
+    utils.sortableFigures.clonedRect = clonedRect;
+    // initial mousedown configurations
+    utils.initMouseDown(e, element, clonedPreview);
+    // then start moving it following mouse position
+    document.addEventListener("mousemove", onMouseMove);
+    // adding mouseup listener
+    document.addEventListener("mouseup", removeListeners);
   };
 
   const removeListeners = (e) => {
