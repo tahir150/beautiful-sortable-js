@@ -1,4 +1,4 @@
-# beautiful-sortable-js.
+# Beautiful-sortable-js.
 beautiful-sortable-js is a JavaScript library for reorderable drag-and-drop lists.
 
 Demo : https://github.com/tahir150/beautiful-sortable-js/edit/master/README.md
@@ -66,5 +66,8 @@ Options object can be assign by giving second argument.
     },
   });
 ```
+### `itemClass` option
+It will add a class to every sortable Item 
 
-Note : In this version, mobile or Touch devices are not supported !
+
+### Note : In this version, mobile or Touch devices are not supported !
