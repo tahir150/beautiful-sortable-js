@@ -43,8 +43,8 @@ Options object can be assign by giving second argument.
  const sortable = new Sortable(item, {
     itemClass: "item-class", // class applies to every sortable element
     draggingClass: "dargging", // class will apply when dragging start
-    zoom: 0.5, // it is viewport zoom value (if have css zoom property)
     disabledClass: "disabled", // class will apply if sorting is disable
+    zoom: 1, // it is viewport zoom value (if have css zoom property)
     containers: "sort-container", // comma seperated appendable boxes classes
     fallBackElement: item.classList.contains("fallback") // it is not sortable, it just append this fallback html
       ? `<div class="fallback-element">
@@ -68,6 +68,12 @@ Options object can be assign by giving second argument.
 ```
 ### `itemClass` option
 It will add a class to every sortable Item 
+
+### `draggingClass` option
+When Sortable Item starts dragging for sorting, the class will applied and when sorted or cancel sorted, the class will be removed.
+
+### `disabledClass` option
+When you disable any element, the class will be applied until you re-enable it.
 
 
 ### Note : In this version, mobile or Touch devices are not supported !
