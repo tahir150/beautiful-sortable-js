@@ -8,7 +8,7 @@ const getUtils = function (config = {}) {
 
   // Checking if not an error
   if (false) {
-    throwError("bhai error agaya hai niklo");
+    throwError("error");
   }
 
   return {
@@ -196,9 +196,9 @@ const getUtils = function (config = {}) {
         this.updateClass(scrollParent, this.cssClasses.containment);
       }
 
-      if (config.appendableClasses) {
-        if (typeof config.appendableClasses === "string") {
-          config.appendableClasses.split(",").forEach((cls) => {
+      if (config.containers) {
+        if (typeof config.containers === "string") {
+          config.containers.split(",").forEach((cls) => {
             document.querySelectorAll("." + cls).forEach((el) => {
               this.updateClass(el, this.cssClasses.appendableClasss);
               this.handleDefaultHeight(el);
@@ -207,9 +207,19 @@ const getUtils = function (config = {}) {
         }
       }
 
-      if (config.fallBackElement) {
-        config.fallBackElement.classList.add(this.cssClasses.fallBackPreview);
-        this.sortableFigures.orignalFallback = config.fallBackElement;
+      let fallBackElement = config.fallBackElement;
+      if (fallBackElement) {
+        if (typeof fallBackElement === "string") {
+          const div = document.createElement("div");
+          div.innerHTML = fallBackElement;
+          fallBackElement = div.childNodes[0];
+        }
+        try {
+          fallBackElement.classList.add(this.cssClasses.fallBackPreview);
+          this.sortableFigures.orignalFallback = fallBackElement;
+        } catch (e) {
+          this.throwError("Please enter valid html for fallback Element");
+        }
       }
     },
 
@@ -269,8 +279,7 @@ const getUtils = function (config = {}) {
       }
       if (currentScrollY !== initSy) {
         const yDiff = currentScrollY - initSy;
-        this.sortableFigures.windowScroll.y = currentScrollY;
-        y = y - yDiff;
+        y = y + yDiff;
       }
 
       let left = event.pageX / config.zoom - mouseDiffX;
@@ -351,8 +360,6 @@ const getUtils = function (config = {}) {
       const fallBackElement = getFallbackElement();
       const fallbackRequirementsMeet = () => {
         if (fallBackElement) {
-          this.sortableFigures.itemDetails.startedFrom.parent !==
-            appendableContainment;
           if (
             this.sortableFigures.itemDetails.startedFrom.parent !==
             appendableContainment
@@ -443,9 +450,13 @@ const getUtils = function (config = {}) {
               // if not empty then run thouching boundaries code
               if (isNotEmpty) {
                 if (hittedTop) {
-                  configContainment.before(sortingElement);
+                  if (!fallBackElement) {
+                    configContainment.before(sortingElement);
+                  }
                 } else {
-                  configContainment.after(sortingElement);
+                  if (!fallBackElement) {
+                    configContainment.after(sortingElement);
+                  }
                 }
               } else {
                 // if Empty then append at least 1 element first
@@ -551,13 +562,14 @@ function Sortable(element, paramConfig = {}) {
   const defaultConfig = {
     containment: null,
     zoom: 1,
-    draggingClass: "",
-    itemClass: "",
-    appendableClasses: "",
     fallBackClone: true,
     onStart: () => {},
     onSort: () => {},
     onDrop: () => {},
+    itemClass: "",
+    draggingClass: "",
+    containers: "",
+    disabledClass: "",
   };
   const config = {
     ...defaultConfig,
@@ -565,12 +577,6 @@ function Sortable(element, paramConfig = {}) {
   };
 
   //utils
-  // let utils = {};
-  // try {
-  //   utils = getUtils(config);
-  // } catch (e) {
-  //   return console.error(e);
-  // }
   const utils = getUtils(config);
   // Inecting Css Style to head
   utils.injectCss();
@@ -625,9 +631,14 @@ function Sortable(element, paramConfig = {}) {
       if (disable) {
         element.removeEventListener("mousedown", onMouseDown);
         element.classList.remove(utils.cssClasses.sortable);
+        if (config.disabledClass) {
+          element.classList.remove(config.disabledClass);
+        }
       } else {
         element.addEventListener("mousedown", onMouseDown);
-        element.classList.add(utils.cssClasses.sortable);
+        if (config.disabledClass) {
+          element.classList.add(config.disabledClass);
+        }
       }
     } else {
       console.error(
