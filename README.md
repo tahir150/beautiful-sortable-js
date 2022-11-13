@@ -12,20 +12,21 @@ import Sortable from 'sortablejs';
 ```
 
 ## Usage
-```html5
+```html
  <div class="sortable-container">
-        <div class="sort">
-          <span>Hello I am a Element 1</span>
-        </div>
-        <div class="sort">
-          <span>Hello I am a Element 2</span>
-        </div>
-        <div class="sort">
-          <span>Hello I am a Element 3</span>
-        </div>
-        <div class="sort">
-          <span>Hello I am a Element 4</span>
-        </div>
+     <div class="sort">
+       <span>Hello I am a Element 1</span>
+     </div>
+     <div class="sort">
+       <span>Hello I am a Element 2</span>
+     </div>
+     <div class="sort">
+       <span>Hello I am a Element 3</span>
+     </div>
+     <div class="sort">
+       <span>Hello I am a Element 4</span>
+     </div>
+  </div>
 ```
 ```javascript
 const elements = document.querySelectorAll(".sort");
