@@ -14,7 +14,7 @@ import Sortable from 'beautiful-sortable-j';
 ```
 
 Or connect a CDN link
-```
+```javascript
 <script src="https://github.com/tahir150/beautiful-sortable-js/edit/master/README.md"></script>
 ```
 
