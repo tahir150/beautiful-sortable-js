@@ -75,5 +75,17 @@ When Sortable Item starts dragging for sorting, the class will applied and when 
 ### `disabledClass` option
 When you disable any element, the class will be applied until you re-enable it.
 
+### `zoom` option
+If your body or main container has CSS zoom property or transform scale, you will need to give zoom value which help to drag perfectly.
+
+### `containers` option
+It takes css comma seperated classes of div's containers.It will allow  the item to drop into zontainer while sorting.
+
+### `fallBackElement` option
+It takes HTML DOM object or HTML string, It is fallback Element which will drop into your container.To work with this, container is required. It will not drop the Real sorting Element, It will drop your fallback which you've passed to it.
+
+### `fallBackClone` option
+It takes Boolean value (defaults to true). It will drop a clone of your fallback Element.
+
 
 ### Note : In this version, mobile or Touch devices are not supported !
