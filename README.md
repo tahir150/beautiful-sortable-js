@@ -10,7 +10,12 @@ $ npm install beautiful-sortable-js --save
 ```
 Import into your project:
 ```javascript
-import Sortable from 'sortablejs';
+import Sortable from 'beautiful-sortable-j';
+```
+
+Or connect a CDN link
+```
+<script src="https://github.com/tahir150/beautiful-sortable-js/edit/master/README.md"></script>
 ```
 
 ## Usage
