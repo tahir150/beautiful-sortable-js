@@ -12,7 +12,7 @@ divsToSort.forEach((item, i) => {
     // draggingClass: "dargging", // class will apply when dragging start
     // zoom: 1, // it is viewport zoom value (if have css zoom property)
     // disabledClass: "disabled", // class will apply if sorting is disable
-    // containers: "sort-container", // comma seperated appendable boxes classes
+    containers: "sort-container", // comma seperated appendable boxes classes
     fallBackElement: item.classList.contains("fallback") // it is not sortable, it just append this fallback html
       ? `<div class="fallback-element">
          <span>I am fallback</span>

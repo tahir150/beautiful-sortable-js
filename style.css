@@ -34,7 +34,8 @@ body {
   align-items: center;
   color: #747474;
   border-radius: 5px;
-  outline: solid 1px #67676738;
+  outline: solid #414141 1px;
+  border-radius: 4px;
   margin: 15px 0px;
 }
 .fallback-element {
