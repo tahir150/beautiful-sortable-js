@@ -59,8 +59,8 @@ section .section-body {
   outline: solid #1f1f1f 1px;
   border-radius: 4px;
 }
-.sort:not(.sort-container, :nth-child(1), :last-child) {
-  margin: 15px 0px;
+.sort:not(.sort-container) {
+  margin-top: 10px;
 }
 
 section .containers-example {

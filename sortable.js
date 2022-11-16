@@ -484,7 +484,7 @@ const getUtils = function (config = {}) {
     },
 
     terminateMouseDown(element, clonedItem) {
-      const transitionDuration = "0.3s";
+      const transitionDuration = "0.15s";
       const transitionTimeout = parseFloat(transitionDuration) * 1000;
       if (element) {
         // Scrolling into view where user have started sort
