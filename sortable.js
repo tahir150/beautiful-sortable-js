@@ -296,6 +296,7 @@ const getUtils = function (config = {}) {
     sortElement(event, sortingElement) {
       const { clientX: pageX, clientY: pageY } = event;
       const pointElements = document.elementsFromPoint(pageX, pageY);
+      const cssClasses = this.cssClasses;
 
       const isHaveThisAppendable = (parent, child) => {
         return parent === child?.parentElement;
@@ -304,18 +305,18 @@ const getUtils = function (config = {}) {
       const pointedElement = pointElements[0];
 
       const isSortableElement =
-        !pointedElement?.classList.contains(this.cssClasses.sortingItem) &&
-        !pointedElement?.closest("." + this.cssClasses.sortingItem) &&
-        pointedElement?.classList.contains(this.cssClasses.sortable);
+        !pointedElement?.classList.contains(cssClasses.sortingItem) &&
+        !pointedElement?.closest("." + cssClasses.sortingItem) &&
+        pointedElement?.classList.contains(cssClasses.sortable);
 
       //<== CONTAINMENT CODE
       const sortableContainment = pointElements.find((el) =>
-        el?.classList.contains(this.cssClasses.containment)
+        el?.classList.contains(cssClasses.containment)
       );
       const configContainment = pointElements.find(
         (el) =>
-          el?.classList.contains(this.cssClasses.appendableClasss) &&
-          !el?.classList.contains(this.cssClasses.clonedPreview)
+          el?.classList.contains(cssClasses.appendableClasss) &&
+          !el?.classList.contains(cssClasses.clonedPreview)
       );
 
       const appendableContainment = configContainment || sortableContainment;
@@ -327,7 +328,7 @@ const getUtils = function (config = {}) {
           // if any fallback element than remove it and below add new one
           const lastEle = this.sortableFigures.fallBackElement;
           if (
-            lastEle?.classList.contains(this.cssClasses.fallBackPreview) &&
+            lastEle?.classList.contains(cssClasses.fallBackPreview) &&
             this.sortableFigures.itemDetails.startedFrom.parent ===
               appendableContainment
           ) {
@@ -337,14 +338,14 @@ const getUtils = function (config = {}) {
           if (config.fallBackClone) {
             const lastCloned = this.sortableFigures.fallBackClone;
             const canClone = !lastCloned?.classList.contains(
-              this.cssClasses.fallBackClone
+              cssClasses.fallBackClone
             );
 
             if (canClone) {
               const clone = fallbackEle.cloneNode(true);
               this.sortableFigures.fallBackClone = clone;
               this.sortableFigures.fallBackElement = clone;
-              this.updateClass(clone, this.cssClasses.fallBackClone);
+              this.updateClass(clone, cssClasses.fallBackClone);
               return clone;
             } else {
               return lastCloned;
@@ -373,16 +374,16 @@ const getUtils = function (config = {}) {
       const appendableHandler = () => {
         const appendElement = (appendable) => {
           const eleToAppend = appendable || sortingElement;
-          const canAppendToEle =
+          const canAppendToThisContainer =
             appendableContainment !== eleToAppend &&
             !appendableContainment.classList.contains(
-              this.cssClasses.clonedPreview
+              cssClasses.clonedPreview
             ) &&
-            !eleToAppend.closest("." + this.cssClasses.appendableClasss);
-
+            eleToAppend.closest("." + cssClasses.appendableClasss) !==
+              appendableContainment;
           if (
             !isHaveThisAppendable(appendableContainment, eleToAppend) &&
-            canAppendToEle
+            canAppendToThisContainer
           ) {
             appendableContainment.append(eleToAppend);
           }
@@ -393,6 +394,19 @@ const getUtils = function (config = {}) {
             appendElement(fallBackElement);
           }
           // else it can append or sort anywhere
+        } else if (configContainment) {
+          const configClasses = config.containers.split(",");
+          const containmentClasses = configContainment.classList;
+          let canAppend = false;
+          for (let i = 0; i < configClasses.length; i++) {
+            if (containmentClasses.contains(configClasses[i])) {
+              canAppend = true;
+              break;
+            }
+          }
+          if (canAppend) {
+            appendElement();
+          }
         } else {
           appendElement();
         }
@@ -407,8 +421,8 @@ const getUtils = function (config = {}) {
           const elementRect = pointedElement.getBoundingClientRect();
           const elementMiddleY = elementRect.y + elementRect.height / 2;
           const notInnerConntainment = !pointedElement.classList.contains(
-            // preventing for inner containment
-            this.cssClasses.appendableClasss
+            // preventing for inner containment, it will control itself below
+            cssClasses.appendableClasss
           );
 
           if (notInnerConntainment) {
@@ -417,17 +431,24 @@ const getUtils = function (config = {}) {
             } else {
               pointedElement.before(eleToSort);
             }
-          }
+          } else return true;
         };
 
         // If fallback then not for same parent
         if (fallBackElement) {
           if (fallbackRequirementsMeet()) {
-            sortElement(fallBackElement);
+            const reVal = sortElement(fallBackElement);
+            if (reVal) return true;
           }
           // else it can append or sort anywhere
+        } else if (configContainment) {
+          if (config.containers) {
+            const reVal = sortElement();
+            if (reVal) return true;
+          }
         } else {
-          sortElement();
+          const reVal = sortElement();
+          if (reVal) return true;
         }
       };
       // <== Sortable Functionality Ends
@@ -435,6 +456,11 @@ const getUtils = function (config = {}) {
       // <== Appendable Functionality
       if (appendableContainment) {
         if (configContainment) {
+          const callAppend = () => {
+            if (config.containers) {
+              appendableHandler();
+            }
+          };
           // inner containment
           const boundaryGap = 10;
           const { top, bottom } = configContainment.getBoundingClientRect();
@@ -445,28 +471,32 @@ const getUtils = function (config = {}) {
           if (isSortableElement) {
             if (touchingBoundaries) {
               const isNotEmpty = configContainment.querySelector(
-                "." + this.cssClasses.sortable
+                "." + cssClasses.sortable
               );
               // if not empty then run thouching boundaries code
               if (isNotEmpty) {
-                if (hittedTop) {
-                  if (!fallBackElement) {
-                    configContainment.before(sortingElement);
-                  }
-                } else {
-                  if (!fallBackElement) {
-                    configContainment.after(sortingElement);
+                if (!fallBackElement) {
+                  if (
+                    configContainment.parentElement.classList.contains(
+                      cssClasses.appendableClasss
+                    )
+                  ) {
+                    if (hittedTop) {
+                      configContainment.before(sortingElement);
+                    } else {
+                      configContainment.after(sortingElement);
+                    }
                   }
                 }
-              } else {
-                // if Empty then append at least 1 element first
-                appendableHandler();
               }
             } else {
-              sortTheElement();
+              const notSorted = sortTheElement();
+              if (notSorted && !touchingBoundaries) {
+                callAppend();
+              }
             }
           } else {
-            appendableHandler();
+            callAppend();
           }
         } else {
           // Outer containment
@@ -520,9 +550,12 @@ const getUtils = function (config = {}) {
           element,
           config.containment
         );
+        const { width: eleWidth, height: eleHeight } =
+          getComputedStyle(element);
         clonedItem.style.top = top + "px";
         clonedItem.style.left = left + "px";
-        clonedItem.style.width = getComputedStyle(element).width;
+        clonedItem.style.width = eleWidth;
+        clonedItem.style.height = eleHeight;
         setTimeout(() => {
           clonedItem.remove();
           this.updateClass(element, this.cssClasses.sortMoving, "remove");
@@ -555,6 +588,9 @@ function Sortable(element, paramConfig = {}) {
   // throwing error if element is not provided
   if (!element) {
     console.error("Element is not provided !");
+    return {};
+  } else if (element.closest("pre")) {
+    console.warn("Element inside pre Tag is not supported!");
     return {};
   }
 

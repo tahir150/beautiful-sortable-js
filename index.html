@@ -6,57 +6,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <title>Document</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js"
+      integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism.min.css"
+    integrity="sha512-/mZ1FHPkg6EKcxo0fKXF51ak6Cr2ocgDi5ytaTBjsQZIH/RNs6GF6+oId/vPe3eJB836T36nXwVh/WBl/cWT4w=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
 
   <body>
     <div class="container">
-      <section>
-        <div class="section-head">
-          This is an example of simple sorting Elements.Drag To start sorting
-          and make the List Reorder
+      <header>
+        <div class="row">
+          <a href="https://github.com/tahir150/beautiful-sortable-js"
+            >Beautiful-sortable-js</a
+          >
+          <a
+            href="https://github.com/tahir150/beautiful-sortable-js"
+            target="_blank"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="white"
+            >
+              <path
+                d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm2.218 18.616c-.354.069-.468-.149-.468-.336v-1.921c0-.653-.229-1.079-.481-1.296 1.56-.173 3.198-.765 3.198-3.454 0-.765-.273-1.389-.721-1.879.072-.177.312-.889-.069-1.853 0 0-.587-.188-1.923.717-.561-.154-1.159-.231-1.754-.234-.595.003-1.193.08-1.753.235-1.337-.905-1.925-.717-1.925-.717-.379.964-.14 1.676-.067 1.852-.448.49-.722 1.114-.722 1.879 0 2.682 1.634 3.282 3.189 3.459-.2.175-.381.483-.444.936-.4.179-1.413.488-2.037-.582 0 0-.37-.672-1.073-.722 0 0-.683-.009-.048.426 0 0 .46.215.777 1.024 0 0 .405 1.25 2.353.826v1.303c0 .185-.113.402-.462.337-2.782-.925-4.788-3.549-4.788-6.641 0-3.867 3.135-7 7-7s7 3.133 7 7c0 3.091-2.003 5.715-4.782 6.641z"
+              />
+            </svg>
+          </a>
         </div>
-        <div class="section-body">
+        <div class="info">
+          beautiful-sortable-js is a JavaScript library for reorderable
+          drag-and-drop lists.
+        </div>
+      </header>
+
+      <section>
+        <div class="section-head">Simple Sortable Box</div>
+        <div class="section-body left-m-responsive">
           <div class="sortable-container">
-            <div class="sort">
-              <span>Hello I am a Element 1</span>
-            </div>
-            <div class="sort">
-              <span>Hello I am a Element 2</span>
-            </div>
-            <div class="sort">
-              <span>Hello I am a Element 3</span>
-            </div>
-            <div class="sort">
-              <span>Hello I am a Element 4</span>
-            </div>
-            <div class="sort">
-              <span>Hello I am a Element 5</span>
-            </div>
+            <div class="sort">Hello I am a Element 1</div>
+            <div class="sort">Hello I am a Element 2</div>
+            <div class="sort">Hello I am a Element 3</div>
+            <div class="sort">Hello I am a Element 4</div>
+            <div class="sort">Hello I am a Element 5</div>
+          </div>
+        </div>
+
+        <div class="example-info">
+          This is an example of sortable Js where any item can be sorted
+          reordered
+        </div>
+        <div class="code-preview">
+          <div class="code-heading">HTML</div>
+          <div class="pre-code-wrapper">
+            <pre class="code"><code class="nohighlight bs-markup">
+  <div class="sortable-container">
+    <div class="sort">Hello I am a Element 1</div>
+    <div class="sort">Hello I am a Element 2</div>
+    <div class="sort">Hello I am a Element 3</div>
+    <div class="sort">Hello I am a Element 4</div>
+    <div class="sort">Hello I am a Element 5</div>
+  </div>
+          </code></pre>
+          </div>
+        </div>
+        <div class="code-preview">
+          <div class="code-heading">CSS</div>
+          <div class="pre-code-wrapper">
+            <pre class="code"><code class="nohighlight bs-css">
+    body {
+      background-color: rgb(31 31 31);
+    }
+
+    .sortable-container {
+      width: 300px;
+      max-height: 600px;
+      border: solid #000000 1px;
+      border-radius: 7px;
+      margin: 18px 0;
+      background-color: rgb(23 23 23);
+      overflow: auto;
+      padding: 15px;
+    }
+
+    .sort {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 46px;
+      color: #747474;
+      font-size: 13px;
+      margin-top: 10px;
+      border-radius: 5px;
+      outline: solid #1f1f1f 1px;
+      background-color: rgb(26 26 26);
+    }
+                    </code></pre>
+          </div>
+        </div>
+        <div class="code-preview">
+          <div class="code-heading">Javascript</div>
+          <div class="pre-code-wrapper">
+            <pre class="code"><code class="nohighlight bs-javascript">
+    document.querySelectorAll(".sort").forEach(function(item){
+      const sortable = new Sortable(item);
+    });
+            </code></pre>
           </div>
         </div>
       </section>
 
-      <section>
+      <section id="sortable-el">
         <div class="section-head">
-          Here is an Example of External Containers
+          Here is an Example of External Containers and Containers which are
+          also sortable.
         </div>
-        <div class="section-body m-0">
+        <div class="section-body left-m-responsive m-0">
           <div class="containers-example">
             <div class="container-example-wrapper">
               <div class="wrapper-head">Todo</div>
               <div class="sort-container">
                 <div class="sort">
-                  <span>Hello I am a Element 5</span>
+                  <span>Awake</span>
+                </div>
+                <div class="sort">
+                  <span>Eat</span>
                 </div>
               </div>
             </div>
             <div class="container-example-wrapper">
               <div class="wrapper-head">InPrgress</div>
-              <div class="sort-container"></div>
+              <div class="sort-container">
+                <div class="sort">
+                  <span>Sleeping</span>
+                </div>
+              </div>
             </div>
             <div class="container-example-wrapper">
-              <div class="wrapper-head">Done - I am also sortable</div>
-              <div class="sort sort-container"></div>
+              <div class="wrapper-head">Done</div>
+              <div class="sort sort-container">
+                <div class="sort sort-container border">
+                  <span class="suggestion"
+                    >I am container and also sortable</span
+                  >
+                </div>
+              </div>
             </div>
           </div>
         </div>
