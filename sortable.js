@@ -293,10 +293,10 @@ const getUtils = function (config = {}) {
       this.sortableFigures.mouseX = event.pageX;
     },
 
-    sortElement(event, sortingElement) {
+    sortElement({ event, sortingElement, path }) {
       const { clientX: pageX, clientY: pageY } = event;
-      const path = event.path;
-      const pointElements = [...path].splice(0, path.length - 2);
+      // const pointElements = [...path].splice(0, path.length - 2);
+      const pointElements = document.elementsFromPoint(pageX, pageY);
       const cssClasses = this.cssClasses;
 
       const isHaveThisAppendable = (parent, child) => {
@@ -655,10 +655,18 @@ function Sortable(element, paramConfig = {}) {
       utils.movePreview({
         event: targetTouch,
       });
-      // utils.sortElement(e, element);
+      utils.sortElement({
+        event: targetTouch,
+        sortingElement: element,
+        path: e.path,
+      });
     } else {
       utils.movePreview({ event: e });
-      utils.sortElement(e, element);
+      utils.sortElement({
+        event: e,
+        sortingElement: element,
+        path: e.path,
+      });
     }
     utils.updateElementsInitialPosition(element);
   };
