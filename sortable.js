@@ -295,7 +295,8 @@ const getUtils = function (config = {}) {
 
     sortElement(event, sortingElement) {
       const { clientX: pageX, clientY: pageY } = event;
-      const pointElements = document.elementsFromPoint(pageX, pageY);
+      const path = event.path;
+      const pointElements = [...path].splice(0, path.length - 2);
       const cssClasses = this.cssClasses;
 
       const isHaveThisAppendable = (parent, child) => {
@@ -621,6 +622,7 @@ function Sortable(element, paramConfig = {}) {
   // Sortable Functionality
   const onMouseDown = (e) => {
     e.stopPropagation();
+    const isTouched = e.pointerType !== "mouse";
     // getting clone of Element to it's position for preview
     const clonedPreview = utils.getClone(element);
     utils.sortableFigures.clonedPreview = clonedPreview;
@@ -634,9 +636,16 @@ function Sortable(element, paramConfig = {}) {
     // initial mousedown configurations
     utils.initMouseDown(e, element, clonedPreview);
     // then start moving it following mouse position
-    document.addEventListener("mousemove", onMouseMove);
+    if (isTouched) {
+      document.addEventListener("touchmove", (e) => {
+        console.log(e);
+      });
+    } else {
+      document.addEventListener("mousemove", onMouseMove);
+    }
     // adding mouseup listener
     document.addEventListener("mouseup", removeListeners);
+    document.addEventListener("touchend", removeListeners); // touch
   };
 
   const onMouseMove = (e) => {
@@ -651,26 +660,6 @@ function Sortable(element, paramConfig = {}) {
     utils.updateElementsInitialPosition(element);
   };
 
-  const onTouchDown = (e) => {
-    e.stopPropagation();
-    // getting clone of Element to it's position for preview
-    const clonedPreview = utils.getClone(element);
-    utils.sortableFigures.clonedPreview = clonedPreview;
-    const distance = {};
-    const { pageX, pageY } = e;
-    const item = e.currentTarget;
-    const { x: itemX, y: itemY } = item.getBoundingClientRect();
-    distance.y = pageY / config.zoom - itemY;
-    distance.x = pageX / config.zoom - itemX;
-    utils.sortableFigures.cloneDistance = distance;
-    // initial mousedown configurations
-    utils.initMouseDown(e, element, clonedPreview);
-    // // then start moving it following mouse position
-    // document.addEventListener("touchmove", onMouseMove);
-    // // adding mouseup listener
-    document.addEventListener("touchend", removeListeners);
-  };
-
   const removeListeners = (e) => {
     e.stopPropagation();
     utils.terminateMouseDown(element, utils.sortableFigures.clonedPreview);
@@ -679,8 +668,7 @@ function Sortable(element, paramConfig = {}) {
   };
 
   // Attaching Main Listener
-  element.addEventListener("mousedown", onMouseDown);
-  element.addEventListener("pointerdown", onTouchDown);
+  element.addEventListener("pointerdown", onMouseDown); // touch , mouse
 
   // Methods
   this.disable = function (disable = true) {
