@@ -56,7 +56,6 @@ section2Divs.forEach((item, i) => {
 });
 
 // Javascript code viewer
-let oldCopiedBtn = null;
 const getCopyButton = (textToCopy = "") => {
   const button = document.createElement("button");
   button.classList.add("copy-btn");
