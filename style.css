@@ -23,7 +23,7 @@ body {
   overflow: auto;
   margin: auto;
   padding: 10px;
-  color: white;
+  color: #a4a4a4;
 }
 
 .container header {
@@ -93,6 +93,7 @@ section .example-info {
   border-radius: 5px;
   outline: solid #1f1f1f 1px;
   background-color: rgb(26 26 26);
+  touch-action: none;
 }
 
 section .containers-example {
@@ -211,5 +212,12 @@ section .containers-example .sort-container .suggestion,
     margin-left: auto;
     margin-right: auto;
     width: fit-content;
+  }
+  .container .info {
+    text-indent: 0;
+  }
+  .container .info,
+  section .example-info {
+    font-size: 12px;
   }
 }

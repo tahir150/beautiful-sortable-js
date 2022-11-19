@@ -622,7 +622,6 @@ function Sortable(element, paramConfig = {}) {
   // Sortable Functionality
   const onMouseDown = (e) => {
     e.stopPropagation();
-    const isTouched = e.pointerType !== "mouse";
     // getting clone of Element to it's position for preview
     const clonedPreview = utils.getClone(element);
     utils.sortableFigures.clonedPreview = clonedPreview;
@@ -636,19 +635,15 @@ function Sortable(element, paramConfig = {}) {
     // initial mousedown configurations
     utils.initMouseDown(e, element, clonedPreview);
     // then start moving it following mouse position
-    if (isTouched) {
-      document.addEventListener("touchmove", (e) => {
-        startMove(e, isTouched);
-      });
-    } else {
-      document.addEventListener("mousemove", startMove);
-    }
+    document.addEventListener("mousemove", startMove);
+    document.addEventListener("touchmove", startMove); // touch
     // adding mouseup listener
     document.addEventListener("mouseup", removeListeners);
     document.addEventListener("touchend", removeListeners); // touch
   };
 
-  const startMove = (e, isTouched = false) => {
+  const startMove = (e) => {
+    const isTouched = e.type === "touchmove";
     e.stopPropagation();
     utils.updateClass(
       utils.sortableFigures.clonedPreview,
