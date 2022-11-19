@@ -638,7 +638,7 @@ function Sortable(element, paramConfig = {}) {
     // then start moving it following mouse position
     if (isTouched) {
       document.addEventListener("touchmove", (e) => {
-        console.log(e);
+        onMouseMove(e, isTouched);
       });
     } else {
       document.addEventListener("mousemove", onMouseMove);
@@ -648,7 +648,7 @@ function Sortable(element, paramConfig = {}) {
     document.addEventListener("touchend", removeListeners); // touch
   };
 
-  const onMouseMove = (e) => {
+  const onMouseMove = (e, isTouched = false) => {
     e.stopPropagation();
     utils.updateClass(
       utils.sortableFigures.clonedPreview,
