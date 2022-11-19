@@ -261,7 +261,7 @@ const getUtils = function (config = {}) {
       this.sortableFigures.initial.scrollX = scrollLeft;
     },
 
-    movePreview(event) {
+    movePreview({ event, pageX, pageY }) {
       const clonedPreview = this.sortableFigures.clonedPreview;
       const mouseDiffY = this.sortableFigures.mouseY - event.pageY;
       const mouseDiffX = this.sortableFigures.mouseX - event.pageX;
@@ -638,32 +638,41 @@ function Sortable(element, paramConfig = {}) {
     // then start moving it following mouse position
     if (isTouched) {
       document.addEventListener("touchmove", (e) => {
-        onMouseMove(e, isTouched);
+        startMove(e, isTouched);
       });
     } else {
-      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mousemove", startMove);
     }
     // adding mouseup listener
     document.addEventListener("mouseup", removeListeners);
     document.addEventListener("touchend", removeListeners); // touch
   };
 
-  const onMouseMove = (e, isTouched = false) => {
+  const startMove = (e, isTouched = false) => {
     e.stopPropagation();
     utils.updateClass(
       utils.sortableFigures.clonedPreview,
       utils.cssClasses.cloneMoving
     );
     utils.updateClass(element, utils.cssClasses.sortMoving);
-    utils.movePreview(e);
-    utils.sortElement(e, element);
+    if (isTouched) {
+      const targetTouch = e.targetTouches[0];
+      utils.movePreview({
+        event: targetTouch,
+      });
+      // utils.sortElement(e, element);
+    } else {
+      utils.movePreview({ event: e });
+      utils.sortElement(e, element);
+    }
     utils.updateElementsInitialPosition(element);
   };
 
   const removeListeners = (e) => {
     e.stopPropagation();
     utils.terminateMouseDown(element, utils.sortableFigures.clonedPreview);
-    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mousemove", startMove);
+    document.removeEventListener("touchmove", startMove);
     document.removeEventListener("mouseup", removeListeners);
   };
 
@@ -674,13 +683,13 @@ function Sortable(element, paramConfig = {}) {
   this.disable = function (disable = true) {
     if (element) {
       if (disable) {
-        element.removeEventListener("mousedown", onMouseDown);
+        element.removeEventListener("pointerdown", onMouseDown);
         element.classList.remove(utils.cssClasses.sortable);
         if (config.disabledClass) {
           element.classList.remove(config.disabledClass);
         }
       } else {
-        element.addEventListener("mousedown", onMouseDown);
+        element.addEventListener("pointerdown", onMouseDown);
         if (config.disabledClass) {
           element.classList.add(config.disabledClass);
         }
