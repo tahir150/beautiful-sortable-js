@@ -55,6 +55,14 @@ section2Divs.forEach((item, i) => {
   });
 });
 
+// Section 3
+const section3Divs = sections[2]?.querySelectorAll(".sort");
+section3Divs.forEach((item, i) => {
+  const sortable = new Sortable(item, {
+    containers: "sort-container", // comma seperated appendable boxes classes,
+  });
+});
+
 // Javascript code viewer
 const getCopyButton = (textToCopy = "") => {
   const button = document.createElement("button");
