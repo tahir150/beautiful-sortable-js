@@ -41,7 +41,9 @@
       </header>
 
       <section>
-        <div class="section-head">Simple Sortable Box</div>
+        <div class="section-head">
+          <p>Simple Sortable Box</p>
+        </div>
         <div class="section-body left-m-responsive">
           <div class="sortable-container">
             <div class="sort">Hello I am a Element 1</div>
@@ -56,74 +58,78 @@
           This is an example of sortable Js where any item can be sorted
           reordered
         </div>
-        <div class="code-preview">
-          <div class="code-heading">HTML</div>
-          <div class="pre-code-wrapper">
-            <pre class="code"><code class="nohighlight bs-markup">
-  <div class="sortable-container">
-    <div class="sort">Hello I am a Element 1</div>
-    <div class="sort">Hello I am a Element 2</div>
-    <div class="sort">Hello I am a Element 3</div>
-    <div class="sort">Hello I am a Element 4</div>
-    <div class="sort">Hello I am a Element 5</div>
-  </div>
-          </code></pre>
-          </div>
-        </div>
-        <div class="code-preview">
-          <div class="code-heading">CSS</div>
-          <div class="pre-code-wrapper">
-            <pre class="code"><code class="nohighlight bs-css">
-    body {
-      background-color: rgb(31 31 31);
-    }
-
-    .sortable-container {
-      width: 300px;
-      max-height: 600px;
-      border: solid #000000 1px;
-      border-radius: 7px;
-      margin: 18px 0;
-      background-color: rgb(23 23 23);
-      overflow: auto;
-      padding: 15px;
-    }
-
-    .sort {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 46px;
-      color: #747474;
-      font-size: 13px;
-      margin-top: 10px;
-      border-radius: 5px;
-      outline: solid #1f1f1f 1px;
-      background-color: rgb(26 26 26);
-    }
-                    </code></pre>
-          </div>
-        </div>
-        <div class="code-preview">
-          <div class="code-heading">Javascript</div>
-          <div class="pre-code-wrapper">
-            <pre class="code"><code class="nohighlight bs-javascript">
-    document.querySelectorAll(".sort").forEach(function(item){
-      const sortable = new Sortable(item);
-    });
+        <!-- Code started -->
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+    <div class="sortable-container">
+      <div class="sort">Hello I am a Element 1</div>
+      <div class="sort">Hello I am a Element 2</div>
+      <div class="sort">Hello I am a Element 3</div>
+      <div class="sort">Hello I am a Element 4</div>
+      <div class="sort">Hello I am a Element 5</div>
+    </div>
             </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+      body {
+        background-color: #1f1f1f;
+      }
+  
+      .sortable-container {
+        width: 300px;
+        max-height: 600px;
+        border: solid #000000 1px;
+        border-radius: 7px;
+        margin: 18px 0;
+        background-color: rgb(23 23 23);
+        overflow: auto;
+        padding: 15px;
+      }
+  
+      .sort {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 46px;
+        color: #747474;
+        font-size: 13px;
+        margin-top: 10px;
+        border-radius: 5px;
+        outline: solid #1f1f1f 1px;
+        background-color: rgb(26 26 26);
+      }
+                      </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+      document.querySelectorAll(".sort").forEach(function(item){
+        const sortable = new Sortable(item);
+      });
+              </code></pre>
+            </div>
           </div>
         </div>
+        <!-- Code end -->
       </section>
 
       <section id="sortable-el">
         <div class="section-head">
-          Here is an Example of External Containers and Containers which are
-          also sortable.
+          <p>Sorting in multiple boxes</p>
         </div>
-        <div class="section-body left-m-responsive m-0">
+        <div class="section-body m-0">
           <div class="containers-example">
-            <div class="container-example-wrapper">
+            <div class="container-wrapper">
               <div class="wrapper-head">Todo</div>
               <div class="sort-container">
                 <div class="sort">
@@ -134,7 +140,7 @@
                 </div>
               </div>
             </div>
-            <div class="container-example-wrapper">
+            <div class="container-wrapper">
               <div class="wrapper-head">InPrgress</div>
               <div class="sort-container">
                 <div class="sort">
@@ -142,21 +148,106 @@
                 </div>
               </div>
             </div>
-            <div class="container-example-wrapper">
+            <div class="container-wrapper">
               <div class="wrapper-head">Done</div>
-              <div class="sort sort-container">
-                <div class="sort sort-container border">
-                  <span class="suggestion"
-                    >I am container and also sortable</span
-                  >
-                </div>
-              </div>
+              <div class="sort-container"></div>
             </div>
           </div>
         </div>
+
+        <!-- Code started -->
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+      <div class="containers-example">
+        <div class="container-wrapper">
+          <div class="wrapper-head">Todo</div>
+          <div class="sort-container">
+            <div class="sort">
+              <span>Awake</span>
+            </div>
+            <div class="sort">
+              <span>Eat</span>
+            </div>
+          </div>
+        </div>
+        <div class="container-wrapper">
+          <div class="wrapper-head">InPrgress</div>
+          <div class="sort-container">
+            <div class="sort">
+              <span>Sleeping</span>
+            </div>
+          </div>
+        </div>
+        <div class="container-wrapper">
+          <div class="wrapper-head">Done</div>
+          <div class="sort-container"></div>
+        </div>
+      </div>
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+      body {
+        background-color: #1f1f1f;
+      }
+      
+      .containers-example {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 25px;
+      }
+
+      .containers-example .container-wrapper {
+        border: solid 1px #3d3d3d;
+        border-radius: 7px;
+        overflow: hidden;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .containers-example .container-wrapper .wrapper-head {
+        background-color: #000000;
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+      }
+
+      .containers-example .container-wrapper .sort-container {
+        min-height: 180px;
+        border: none;
+      }
+                      </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+      const sortable = new Sortable(item, {
+        containers: "sort-container", // comma seperated appendable boxes classes,
+      });
+              </code></pre>
+            </div>
+          </div>
+        </div>
+        <!-- Code end -->
       </section>
 
-      <section>
+      <!-- <div class="sort sort-container border">
+        <span class="suggestion"
+          >I am container and also sortable</span
+        >
+      </div> -->
+      <!-- <section>
         <div class="sortable-container">
           <div class="sort fallback">
             <span>F - Hello I am a Element 10</span>
@@ -167,7 +258,7 @@
             </div>
           </div>
         </div>
-      </section>
+      </section> -->
     </div>
 
     <script src="./sortable.js"></script>

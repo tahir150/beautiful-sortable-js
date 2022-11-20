@@ -14,7 +14,7 @@ body {
 
 .container {
   width: 100%;
-  background-color: rgb(31 31 31);
+  background-color: #1f1f1f;
   max-width: 1000px;
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@ section {
 }
 section .section-head {
   width: 100%;
-  color: #cbcbcb;
+  color: #00b6ff;
   margin-bottom: 20px;
 }
 section .left-m-responsive {
@@ -98,20 +98,20 @@ section .example-info {
 
 section .containers-example {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 25px;
 }
 
-section .container-example-wrapper {
+section .container-wrapper {
   border: solid 1px #3d3d3d;
   border-radius: 7px;
   overflow: hidden;
   width: 100%;
-  max-width: 350px;
+  max-width: 300px;
 }
 
-section .container-example-wrapper .wrapper-head {
+section .container-wrapper .wrapper-head {
   background-color: #000000;
   width: 100%;
   text-align: center;
@@ -147,7 +147,10 @@ section .containers-example .sort-container .suggestion,
   border: rebeccapurple 1px solid;
 }
 
-.code-preview {
+.code-preview-wrapper {
+  margin-top: 35px;
+}
+.code-preview-wrapper .code-preview {
   margin: 15px 0;
 }
 .code-preview .code-heading {
