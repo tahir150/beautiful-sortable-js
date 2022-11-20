@@ -93,6 +93,8 @@ section .example-info {
   border-radius: 5px;
   outline: solid #1f1f1f 1px;
   background-color: rgb(26 26 26);
+}
+.sort {
   touch-action: none;
 }
 
