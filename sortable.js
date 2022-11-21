@@ -618,25 +618,27 @@ function Sortable(element, paramConfig = {}) {
 
   // Sortable Functionality
   const onMouseDown = (e) => {
-    e.stopPropagation();
-    // getting clone of Element to it's position for preview
-    const clonedPreview = utils.getClone(element);
-    utils.sortableFigures.clonedPreview = clonedPreview;
-    const distance = {};
-    const { pageX, pageY } = e;
-    const item = e.currentTarget;
-    const { x: itemX, y: itemY } = item.getBoundingClientRect();
-    distance.y = pageY / config.zoom - itemY;
-    distance.x = pageX / config.zoom - itemX;
-    utils.sortableFigures.cloneDistance = distance;
-    // initial mousedown configurations
-    utils.initMouseDown(e, element, clonedPreview);
-    // then start moving it following mouse position
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("touchmove", onMove); // touch
-    // adding mouseup listener
-    document.addEventListener("mouseup", removeListeners);
-    document.addEventListener("touchend", removeListeners); // touch
+    if (e.which === 1) {
+      e.stopPropagation();
+      // getting clone of Element to it's position for preview
+      const clonedPreview = utils.getClone(element);
+      utils.sortableFigures.clonedPreview = clonedPreview;
+      const distance = {};
+      const { pageX, pageY } = e;
+      const item = e.currentTarget;
+      const { x: itemX, y: itemY } = item.getBoundingClientRect();
+      distance.y = pageY / config.zoom - itemY;
+      distance.x = pageX / config.zoom - itemX;
+      utils.sortableFigures.cloneDistance = distance;
+      // initial mousedown configurations
+      utils.initMouseDown(e, element, clonedPreview);
+      // then start moving it following mouse position
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("touchmove", onMove); // touch
+      // adding mouseup listener
+      document.addEventListener("mouseup", removeListeners);
+      document.addEventListener("touchend", removeListeners); // touch
+    }
   };
 
   const onMove = (e) => {
