@@ -261,10 +261,31 @@ const getUtils = function (config = {}) {
       this.sortableFigures.initial.scrollX = scrollLeft;
     },
 
-    movePreview({ event, pageX, pageY }) {
+    windowScrollIdNeeded({ clientX, clientY }) {
+      const { innerHeight, innerWidth } = window;
+      const topBoundariesTouched = clientY < 50;
+      const bottomBoundariesTouched = clientY > innerHeight - 50;
+      if (topBoundariesTouched || bottomBoundariesTouched) {
+        if (!this.interval) {
+          const scrollYTo = topBoundariesTouched ? -50 : 50;
+          this.interval = setInterval(() => {
+            window.scrollTo(0, window.scrollY + scrollYTo);
+          }, 50);
+        }
+      }
+      if (!topBoundariesTouched && !bottomBoundariesTouched) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+    },
+
+    interval: null,
+
+    movePreview({ event }) {
+      const { pageY, pageX } = event;
       const clonedPreview = this.sortableFigures.clonedPreview;
-      const mouseDiffY = this.sortableFigures.mouseY - event.pageY;
-      const mouseDiffX = this.sortableFigures.mouseX - event.pageX;
+      const mouseDiffY = this.sortableFigures.mouseY - pageY;
+      const mouseDiffX = this.sortableFigures.mouseX - pageX;
       let { y, x } = this.sortableFigures.cloneDistance;
 
       // if Scroll has change, add to element's position
@@ -282,15 +303,16 @@ const getUtils = function (config = {}) {
         y = y + yDiff;
       }
 
-      let left = event.pageX / config.zoom - mouseDiffX;
-      let top = event.pageY / config.zoom - mouseDiffY;
+      let left = pageX / config.zoom - mouseDiffX;
+      let top = pageY / config.zoom - mouseDiffY;
 
       clonedPreview.style.left = left - x + "px";
       clonedPreview.style.top = top - y + "px";
 
       // ReAssigning new value to take a difference
-      this.sortableFigures.mouseY = event.pageY;
-      this.sortableFigures.mouseX = event.pageX;
+      this.sortableFigures.mouseY = pageY;
+      this.sortableFigures.mouseX = pageX;
+      this.windowScrollIdNeeded(event);
     },
 
     sortElement({ event, sortingElement, path }) {
@@ -526,6 +548,9 @@ const getUtils = function (config = {}) {
           behavior: "smooth",
         });
 
+        clearInterval(this.interval);
+        this.interval = null;
+
         const isFallbackElement = this.sortableFigures.fallBackElement;
         if (isFallbackElement) {
           const endedItemDetail = this.getItemDetail(
@@ -635,14 +660,14 @@ function Sortable(element, paramConfig = {}) {
     // initial mousedown configurations
     utils.initMouseDown(e, element, clonedPreview);
     // then start moving it following mouse position
-    document.addEventListener("mousemove", startMove);
-    document.addEventListener("touchmove", startMove); // touch
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("touchmove", onMove); // touch
     // adding mouseup listener
     document.addEventListener("mouseup", removeListeners);
     document.addEventListener("touchend", removeListeners); // touch
   };
 
-  const startMove = (e) => {
+  const onMove = (e) => {
     const isTouched = e.type === "touchmove";
     e.stopPropagation();
     utils.updateClass(
@@ -674,8 +699,8 @@ function Sortable(element, paramConfig = {}) {
   const removeListeners = (e) => {
     e.stopPropagation();
     utils.terminateMouseDown(element, utils.sortableFigures.clonedPreview);
-    document.removeEventListener("mousemove", startMove);
-    document.removeEventListener("touchmove", startMove);
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("touchmove", onMove);
     document.removeEventListener("mouseup", removeListeners);
   };
 
