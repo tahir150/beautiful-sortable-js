@@ -62,7 +62,7 @@ const getUtils = function (config = {}) {
       const existingStyleTag = document.querySelector("[data-sortable-css]");
 
       if (!existingStyleTag) {
-        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} , .${this.cssClasses.sortable}:hover {    cursor: grab;}.${this.cssClasses.sortable}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  border: solid 1px gray;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;}`;
+        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.sortable} , .${this.cssClasses.sortable}:hover {    cursor: grab;}.${this.cssClasses.sortable}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  border: solid 1px gray;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;}`;
 
         const style = document.createElement("style");
         style.dataset.sortableCss = true;

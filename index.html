@@ -40,7 +40,7 @@
         </div>
       </header>
 
-      <section>
+      <section id="simple-sortable">
         <div class="section-head">
           <p>Simple Sortable Box</p>
         </div>
@@ -123,7 +123,7 @@
         <!-- Code end -->
       </section>
 
-      <section id="sortable-el">
+      <section id="sortable-multiple">
         <div class="section-head">
           <p>Sorting in multiple boxes</p>
         </div>
@@ -244,7 +244,7 @@
         <!-- Code end -->
       </section>
 
-      <section id="sortable-el">
+      <section id="sortable-containers">
         <div class="section-head">
           <p>Sortable containers</p>
         </div>
@@ -377,6 +377,152 @@
         <!-- Code end -->
       </section>
 
+      <section id="sortable-fallback">
+        <div class="section-head">
+          <p>Fallback Elements</p>
+        </div>
+        With Clone
+        <div class="section-body m-0">
+          <div class="containers-example">
+            <div class="container-wrapper">
+              <div class="wrapper-head">Fallback</div>
+              <div class="sort-container">
+                <div class="fallback">
+                  <span>I will Drop Fallback</span>
+                </div>
+              </div>
+            </div>
+            <div class="container-wrapper">
+              <div class="wrapper-head">Drop here Fallback</div>
+              <div class="sort-container"></div>
+            </div>
+            <div class="container-wrapper">
+              <div class="wrapper-head">Drop here Fallback</div>
+              <div class="sort-container"></div>
+            </div>
+          </div>
+        </div>
+        Without Clone
+        <div class="section-body m-0">
+          <div class="containers-example">
+            <div class="container-wrapper">
+              <div class="wrapper-head">Fallback</div>
+              <div class="sort-container">
+                <div class="fallback Without-clone">
+                  <span>I will Drop Fallback</span>
+                </div>
+              </div>
+            </div>
+            <div class="container-wrapper">
+              <div class="wrapper-head">Drop here Fallback</div>
+              <div class="sort-container"></div>
+            </div>
+            <div class="container-wrapper">
+              <div class="wrapper-head">Drop here Fallback</div>
+              <div class="sort-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code started -->
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+    <div class="containers-example">
+      <div class="container-wrapper">
+        <div class="wrapper-head">Fallback</div>
+        <div class="sort-container">
+          <div class="fallback">
+            <span>I will Drop Fallback</span>
+          </div>
+        </div>
+      </div>
+      <div class="container-wrapper">
+        <div class="wrapper-head">Drop here Fallback</div>
+        <div class="sort-container"></div>
+      </div>
+      <div class="container-wrapper">
+        <div class="wrapper-head">Drop here Fallback</div>
+        <div class="sort-container"></div>
+      </div>
+    </div>
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+                
+  body {
+    background-color: #1f1f1f;
+  }
+  
+  .containers-example {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .containers-example .container-wrapper {
+    border: solid 1px #3d3d3d;
+    border-radius: 7px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .containers-example .container-wrapper .wrapper-head {
+    background-color: #000000;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .fallback {
+    border: rebeccapurple 1px solid;
+  }
+
+  .fallback-element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    font-size: 12px;
+    color: white;
+    border: rebeccapurple solid 1px;
+    background: #2e003f;
+  }
+              </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+  document.querySelectorAll(".fallback").forEach(function(item){
+    const sortable = new Sortable(item, {
+      containers: "sort-container", // comma seperated appendable boxes classes,
+      fallBackElement: `<div class="fallback-element">
+                          <span>I am fallback</span>
+                        </div>`,
+    fallBackClone: !item.classList.contains("Without-clone")
+
+    });
+  });
+              </code></pre>
+            </div>
+          </div>
+        </div>
+        <!-- Code end -->
+      </section>
+
       <!-- <div class="sort sort-container border">
         <span class="suggestion"
           >I am container and also sortable</span
@@ -390,6 +536,41 @@
           <div class="sort sort-container">
             <div class="sort">
               <span>Hello I am a Element 1</span>
+            </div>
+          </div>
+        </div>
+      </section> -->
+
+      <!-- <section id="sortable-fallback">
+        <div class="section-head">
+          <p>Fallback Elements</p>
+        </div>
+        <div class="section-body m-0">
+          <div class="containers-example"></div>
+        </div>
+
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+              </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+              </code></pre>
             </div>
           </div>
         </div>
