@@ -514,16 +514,26 @@ const getUtils = function (config = {}) {
               );
               // if not empty then run thouching boundaries code
               if (isNotEmpty) {
-                if (!fallBackElement) {
-                  if (
-                    configContainment.parentElement.classList.contains(
-                      cssClasses.appendableClasss
-                    )
-                  ) {
-                    if (hittedTop) {
-                      configContainment.before(sortingElement);
-                    } else {
-                      configContainment.after(sortingElement);
+                let isPrevented = false;
+                this.sortableFigures.preventedContainerClasses.forEach(
+                  (cls) => {
+                    if (configContainment?.classList.contains(cls)) {
+                      isPrevented = true;
+                    }
+                  }
+                );
+                if (!isPrevented) {
+                  if (!fallBackElement) {
+                    if (
+                      configContainment.parentElement.classList.contains(
+                        cssClasses.appendableClasss
+                      )
+                    ) {
+                      if (hittedTop) {
+                        configContainment.before(sortingElement);
+                      } else {
+                        configContainment.after(sortingElement);
+                      }
                     }
                   }
                 }
