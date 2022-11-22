@@ -40,6 +40,7 @@ const getUtils = function (config = {}) {
       orignalFallback: null,
       fallBackElement: null,
       fallBackClone: null,
+      preventedContainerClasses: [],
       cloneDistance: {
         y: 0,
         x: 0,
@@ -188,6 +189,13 @@ const getUtils = function (config = {}) {
             });
           });
         }
+      }
+
+      if (config.preventedContainers) {
+        const containers = config.preventedContainers.split(",");
+        containers.forEach((cls) =>
+          this.sortableFigures.preventedContainerClasses.push(cls.trim())
+        );
       }
 
       let fallBackElement = config.fallBackElement;
@@ -378,20 +386,30 @@ const getUtils = function (config = {}) {
       /// <== GET FALLBACK ELEMENT CODE END
 
       const appendableHandler = () => {
+        // First checking if not prevented
+        let isPrevented = false;
+        this.sortableFigures.preventedContainerClasses.forEach((cls) => {
+          if (appendableContainment.classList.contains(cls)) {
+            isPrevented = true;
+          }
+        });
+
         const appendElement = (appendable) => {
-          const eleToAppend = appendable || sortingElement;
-          const canAppendToThisContainer =
-            appendableContainment !== eleToAppend &&
-            !appendableContainment.classList.contains(
-              cssClasses.clonedPreview
-            ) &&
-            eleToAppend.closest("." + cssClasses.appendableClasss) !==
-              appendableContainment;
-          if (
-            !isHaveThisAppendable(appendableContainment, eleToAppend) &&
-            canAppendToThisContainer
-          ) {
-            appendableContainment.append(eleToAppend);
+          if (!isPrevented) {
+            const eleToAppend = appendable || sortingElement;
+            const canAppendToThisContainer =
+              appendableContainment !== eleToAppend &&
+              !appendableContainment.classList.contains(
+                cssClasses.clonedPreview
+              ) &&
+              eleToAppend.closest("." + cssClasses.appendableClasss) !==
+                appendableContainment;
+            if (
+              !isHaveThisAppendable(appendableContainment, eleToAppend) &&
+              canAppendToThisContainer
+            ) {
+              appendableContainment.append(eleToAppend);
+            }
           }
         };
         // if any fallback element is present then check if same container
@@ -405,7 +423,7 @@ const getUtils = function (config = {}) {
           const containmentClasses = configContainment.classList;
           let canAppend = false;
           for (let i = 0; i < configClasses.length; i++) {
-            if (containmentClasses.contains(configClasses[i])) {
+            if (containmentClasses.contains(configClasses[i].trim())) {
               canAppend = true;
               break;
             }
@@ -422,22 +440,37 @@ const getUtils = function (config = {}) {
       // SORTING AND APPENDING CODE
       // <== Sortable Functionality
       const sortTheElement = () => {
-        const sortElement = (sortable) => {
-          const eleToSort = sortable || sortingElement;
-          const elementRect = pointedElement.getBoundingClientRect();
-          const elementMiddleY = elementRect.y + elementRect.height / 2;
-          const notInnerConntainment = !pointedElement.classList.contains(
-            // preventing for inner containment, it will control itself below
-            cssClasses.appendableClasss
+        let isPrevented = false;
+        this.sortableFigures.preventedContainerClasses.forEach((cls) => {
+          const preventedParent = pointedElement.closest(
+            "." + cssClasses.containment
           );
+          if (
+            preventedParent?.classList.contains(cls) &&
+            preventedParent !== sortingElement.parentElement
+          ) {
+            isPrevented = true;
+          }
+        });
 
-          if (notInnerConntainment) {
-            if (elementMiddleY < pageY / this.zoomedValue) {
-              pointedElement.after(eleToSort);
-            } else {
-              pointedElement.before(eleToSort);
-            }
-          } else return true;
+        const sortElement = (sortable) => {
+          if (!isPrevented) {
+            const eleToSort = sortable || sortingElement;
+            const elementRect = pointedElement.getBoundingClientRect();
+            const elementMiddleY = elementRect.y + elementRect.height / 2;
+            const notInnerConntainment = !pointedElement.classList.contains(
+              // preventing for inner containment, it will control itself below
+              cssClasses.appendableClasss
+            );
+
+            if (notInnerConntainment) {
+              if (elementMiddleY < pageY / this.zoomedValue) {
+                pointedElement.after(eleToSort);
+              } else {
+                pointedElement.before(eleToSort);
+              }
+            } else return true;
+          }
         };
 
         // If fallback then not for same parent
@@ -617,6 +650,7 @@ function Sortable(element, paramConfig = {}) {
     draggingClass: "",
     containers: "",
     disabledClass: "",
+    preventedContainers: "",
   };
   const config = {
     ...defaultConfig,
