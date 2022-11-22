@@ -57,6 +57,7 @@ const getUtils = function (config = {}) {
         endedOn: {},
       },
     },
+    zoomedValue: 1,
 
     injectCss() {
       const existingStyleTag = document.querySelector("[data-sortable-css]");
@@ -102,6 +103,16 @@ const getUtils = function (config = {}) {
       // else append to first sortable element's parent
       element?.after(clonedPreview);
       return clonedPreview;
+    },
+
+    getZoomedValue() {
+      const z = +(
+        config.zoom ||
+        (config.zoomedElement && getComputedStyle(config.zoomedElement).zoom) ||
+        1
+      );
+      this.zoomedValue = z;
+      return z;
     },
 
     throwError(e) {
@@ -275,8 +286,8 @@ const getUtils = function (config = {}) {
         y = y + yDiff;
       }
 
-      let left = pageX / config.zoom - mouseDiffX;
-      let top = pageY / config.zoom - mouseDiffY;
+      let left = pageX / this.zoomedValue - mouseDiffX;
+      let top = pageY / this.zoomedValue - mouseDiffY;
 
       clonedPreview.style.left = left - x + "px";
       clonedPreview.style.top = top - y + "px";
@@ -421,7 +432,7 @@ const getUtils = function (config = {}) {
           );
 
           if (notInnerConntainment) {
-            if (elementMiddleY < pageY / config.zoom) {
+            if (elementMiddleY < pageY / this.zoomedValue) {
               pointedElement.after(eleToSort);
             } else {
               pointedElement.before(eleToSort);
@@ -588,15 +599,17 @@ function Sortable(element, paramConfig = {}) {
     console.error("Element is not provided !");
     return {};
   } else if (element.closest("pre")) {
-    console.warn("Element inside pre Tag is not supported!");
-    return {};
+    return {
+      disable() {},
+    };
   }
 
   // Configs
   const defaultConfig = {
     containment: null,
-    zoom: 1,
+    zoom: undefined,
     fallBackClone: true,
+    zoomedElement: null,
     onStart: () => {},
     onSort: () => {},
     onDrop: () => {},
@@ -621,14 +634,16 @@ function Sortable(element, paramConfig = {}) {
     if (e.which === 1) {
       e.stopPropagation();
       // getting clone of Element to it's position for preview
+      utils.getZoomedValue();
+
       const clonedPreview = utils.getClone(element);
       utils.sortableFigures.clonedPreview = clonedPreview;
       const distance = {};
       const { pageX, pageY } = e;
       const item = e.currentTarget;
       const { x: itemX, y: itemY } = item.getBoundingClientRect();
-      distance.y = pageY / config.zoom - itemY;
-      distance.x = pageX / config.zoom - itemX;
+      distance.y = pageY / utils.zoomedValue - itemY;
+      distance.x = pageX / utils.zoomedValue - itemX;
       utils.sortableFigures.cloneDistance = distance;
       // initial mousedown configurations
       utils.initMouseDown(e, element, clonedPreview);
@@ -688,12 +703,13 @@ function Sortable(element, paramConfig = {}) {
         element.removeEventListener("pointerdown", onMouseDown);
         element.classList.remove(utils.cssClasses.sortable);
         if (config.disabledClass) {
-          element.classList.remove(config.disabledClass);
+          element.classList.add(config.disabledClass);
         }
       } else {
         element.addEventListener("pointerdown", onMouseDown);
+        element.classList.add(utils.cssClasses.sortable);
         if (config.disabledClass) {
-          element.classList.add(config.disabledClass);
+          element.classList.remove(config.disabledClass);
         }
       }
     } else {

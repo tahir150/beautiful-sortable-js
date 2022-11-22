@@ -57,6 +57,8 @@ section {
   padding: 20px 7px;
 }
 section .section-head {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
   color: #00b6ff;
   margin-bottom: 20px;
@@ -101,6 +103,13 @@ section .containers-example {
   flex-wrap: wrap;
   justify-content: center;
   gap: 25px;
+}
+
+span.message {
+  display: inline-block;
+  font-size: 12px;
+  color: #088d9c;
+  padding-bottom: 10px;
 }
 
 section .container-wrapper {
@@ -148,6 +157,19 @@ section .containers-example .sort-container .suggestion,
   background: #2e003f;
 }
 
+.methods-expample h3 {
+  display: inline-block;
+  padding: 5px 13px;
+  background-color: #000000;
+  font-size: 15px;
+  border-radius: 7px;
+  margin: 3px 0;
+}
+.methods-expample p {
+  display: inline-block;
+  font-size: 13px;
+}
+
 .code-preview-wrapper {
   margin-top: 35px;
 }
@@ -183,6 +205,9 @@ section .containers-example .sort-container .suggestion,
 }
 .code-preview:hover .copy-btn {
   display: block;
+}
+.disabled {
+  opacity: 0.3;
 }
 
 .m-0 {

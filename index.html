@@ -512,7 +512,7 @@
       fallBackElement: `<div class="fallback-element">
                           <span>I am fallback</span>
                         </div>`,
-    fallBackClone: !item.classList.contains("Without-clone")
+    fallBackClone: !item.classList.contains("Without-clone"),
 
     });
   });
@@ -521,6 +521,292 @@
           </div>
         </div>
         <!-- Code end -->
+      </section>
+
+      <section id="sortable-disable">
+        <div class="section-head">
+          <p>Zoomed parent Elements</p>
+          <p>Apply zoom <input type="checkbox" /></p>
+        </div>
+        <div class="section-body m-0">
+          <div class="containers-example">
+            <div class="sortable-container">
+              <span class="message">I will not work perfect after zoom</span>
+
+              <div class="sort">Hello I am a Element 1</div>
+              <div class="sort">Hello I am a Element 2</div>
+              <div class="sort">Hello I am a Element 3</div>
+              <div class="sort">Hello I am a Element 4</div>
+              <div class="sort">Hello I am a Element 5</div>
+            </div>
+            <div class="sortable-container">
+              <span class="message"> I will work perfect after zoom </span>
+              <div class="sort">Hello I am a Element 1</div>
+              <div class="sort">Hello I am a Element 2</div>
+              <div class="sort">Hello I am a Element 3</div>
+              <div class="sort">Hello I am a Element 4</div>
+              <div class="sort">Hello I am a Element 5</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+  <div class="containers-example" style="zoom: 0.5;">
+    <div class="sortable-container">
+      <span class="message">I will not work perfect after zoom</span>
+
+      <div class="sort">Hello I am a Element 1</div>
+      <div class="sort">Hello I am a Element 2</div>
+      <div class="sort">Hello I am a Element 3</div>
+      <div class="sort">Hello I am a Element 4</div>
+      <div class="sort">Hello I am a Element 5</div>
+    </div>
+    <div class="sortable-container">
+      <span class="message"> I will work perfect after zoom </span>
+      <div class="sort">Hello I am a Element 1</div>
+      <div class="sort">Hello I am a Element 2</div>
+      <div class="sort">Hello I am a Element 3</div>
+      <div class="sort">Hello I am a Element 4</div>
+      <div class="sort">Hello I am a Element 5</div>
+    </div>
+  </div>
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+  body {
+    background-color: #1f1f1f;
+  }
+  
+  .containers-example {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .containers-example .container-wrapper {
+    border: solid 1px #3d3d3d;
+    border-radius: 7px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .containers-example .container-wrapper .wrapper-head {
+    background-color: #000000;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  span.message {
+    display: inline-block;
+    font-size: 12px;
+    color: #088d9c;
+    padding-bottom: 10px;
+  }
+              </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+  const containers = sections[4]?.querySelectorAll(".sortable-container");
+  containers[0].querySelectorAll(".sort").forEach(function(item, i) {
+    const sortable = new Sortable(item);
+  });
+  containers[1].querySelectorAll(".sort").forEach(function(item, i) {
+    const sortable = new Sortable(item, {
+      zoomedElement: item.closest(".containers-example"),
+      // or zoom option like zoom : 0.5
+    });
+  });
+              </code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="simple-sortable">
+        <div class="section-head">
+          <p>Disabled method</p>
+        </div>
+        <div class="section-body left-m-responsive">
+          <div class="sortable-container">
+            <div class="sort">Hello I am a Element 1</div>
+            <div class="sort">Hello I am a Element 2</div>
+            <div class="sort">Hello I am a Element 3</div>
+            <div class="sort">Hello I am a Element 4</div>
+            <div class="sort">Hello I am a Element 5</div>
+          </div>
+        </div>
+
+        <div class="example-info">
+          This is an example of sortable Js where any item can be sorted
+          reordered
+        </div>
+        <!-- Code started -->
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+  <div class="sortable-container">
+    <div class="sort">Hello I am a Element 1</div>
+    <div class="sort">Hello I am a Element 2</div>
+    <div class="sort">Hello I am a Element 3</div>
+    <div class="sort">Hello I am a Element 4</div>
+    <div class="sort">Hello I am a Element 5</div>
+  </div>
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+  body {
+    background-color: #1f1f1f;
+  }
+
+  .sortable-container {
+    width: 300px;
+    max-height: 600px;
+    border: solid #000000 1px;
+    border-radius: 7px;
+    margin: 18px 0;
+    background-color: rgb(23 23 23);
+    overflow: auto;
+    padding: 15px;
+  }
+
+  .sort {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 46px;
+    color: #747474;
+    font-size: 13px;
+    margin-top: 10px;
+    border-radius: 5px;
+    outline: solid #1f1f1f 1px;
+    background-color: rgb(26 26 26);
+  }
+
+  .disabled {
+    opacity: 0.3;
+  }
+                      </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+  document.querySelectorAll(".sort").forEach(function(item) {
+    const sortable = new Sortable(item, {
+      disabledClass: "disabled",
+    });
+    if (i % 2 !== 0) { // for even
+      const oldHTML = item.innerHTML;
+      sortable.disable();
+      item.innerHTML = "Click me to Re-Enable";
+
+      function reEnable() {
+        sortable.disable(false);
+        item.removeEventListener("click", reEnable);
+        item.innerHTML = oldHTML;
+      };
+
+      item.addEventListener("click", reEnable);
+    }
+  });
+              </code></pre>
+            </div>
+          </div>
+        </div>
+        <!-- Code end -->
+      </section>
+
+      <section id="sortable-fallback">
+        <div class="section-head">
+          <p>Options Used</p>
+        </div>
+        <div class="section-body m-0">
+          <div class="methods-expample">
+            <a href=""> <h3>onStart</h3></a> :
+            <p>On start option</p>
+          </div>
+
+          <div class="methods-expample">
+            <a href=""> <h3>containment</h3></a> :
+            <p>null</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>zoom</h3></a> :
+            <p>undefined</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>fallBackClone</h3></a> :
+            <p>true</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>zoomedElement</h3></a> :
+            <p>null</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>onStart</h3></a> :
+            <p>() => {}</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>onSort</h3></a> :
+            <p>() => {}</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>onDrop</h3></a> :
+            <p>() => {}</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>itemClass</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>draggingClass</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>containers</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>disabledClass</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample"></div>
+        </div>
       </section>
 
       <!-- <div class="sort sort-container border">

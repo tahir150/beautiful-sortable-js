@@ -39,11 +39,6 @@ const sections = document.querySelectorAll("section");
 // Section 1
 const section1Divs = sections[0]?.querySelectorAll(".sortable-container .sort");
 section1Divs.forEach((item, i) => {
-  const div = document.createElement("div");
-  div.classList.add("fallback-element");
-  div.innerHTML = "I am tahir";
-  div.onclick = () => alert("fallback orignal");
-
   const sortable = new Sortable(item);
 });
 
@@ -63,7 +58,7 @@ section3Divs.forEach((item, i) => {
   });
 });
 
-// Section 3
+// Section 4
 const section4Divs = sections[3]?.querySelectorAll(".fallback");
 section4Divs.forEach((item, i) => {
   const sortable = new Sortable(item, {
@@ -73,6 +68,38 @@ section4Divs.forEach((item, i) => {
   </div>`,
     fallBackClone: !item.classList.contains("Without-clone"),
   });
+});
+
+// Section 5
+const section5Divs = sections[4]?.querySelectorAll(".sortable-container");
+section5Divs[0].querySelectorAll(".sort").forEach((item, i) => {
+  const sortable = new Sortable(item);
+});
+section5Divs[1].querySelectorAll(".sort").forEach((item, i) => {
+  const sortable = new Sortable(item, {
+    zoomedElement: item.closest(".containers-example"),
+  });
+});
+
+// Section 6
+const section6Divs = sections[5]?.querySelectorAll(".sortable-container .sort");
+section6Divs.forEach((item, i) => {
+  const sortable = new Sortable(item, {
+    disabledClass: "disabled",
+  });
+  if (i % 2 !== 0) {
+    const oldHTML = item.innerHTML;
+    sortable.disable();
+    item.innerHTML = "Click me to Re-Enable";
+
+    const reEnable = () => {
+      sortable.disable(false);
+      item.removeEventListener("click", reEnable);
+      item.innerHTML = oldHTML;
+    };
+
+    item.addEventListener("click", reEnable);
+  }
 });
 
 // Javascript code viewer
@@ -102,6 +129,7 @@ const getCopyButton = (textToCopy = "") => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Formating code
   document.querySelectorAll("pre code").forEach((el) => {
     const attrCls =
       [...el.classList].find((cl) => cl.includes("bs-")) || "bs-javascript";
@@ -115,4 +143,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const copyBtn = getCopyButton(code);
     el.append(copyBtn);
   });
+  // adding zoom listener
+  document
+    .querySelector("input[type=checkbox]")
+    .addEventListener("change", (e) => {
+      const container = e.target
+        .closest("section")
+        .querySelector(".containers-example");
+      if (e.target.checked) {
+        container.style.zoom = 0.5;
+      } else {
+        container.style.zoom = "";
+      }
+    });
 });
