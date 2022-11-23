@@ -127,7 +127,8 @@ section .container-wrapper .wrapper-head {
   padding: 10px;
 }
 
-section .containers-example .sort-container {
+section .containers-example .sort-container,
+.school-container {
   min-height: 180px;
   border: none;
 }

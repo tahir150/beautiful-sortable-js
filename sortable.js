@@ -64,7 +64,7 @@ const getUtils = function (config = {}) {
       const existingStyleTag = document.querySelector("[data-sortable-css]");
 
       if (!existingStyleTag) {
-        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.sortable} , .${this.cssClasses.sortable}:hover {    cursor: grab;}.${this.cssClasses.sortable}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  border: solid 1px gray;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;}`;
+        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.sortable} , .${this.cssClasses.sortable}:hover {    cursor: grab;}.${this.cssClasses.sortable}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5; pointer-events: none;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  min-heght:180px;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;}`;
 
         const style = document.createElement("style");
         style.dataset.sortableCss = true;
@@ -442,9 +442,7 @@ const getUtils = function (config = {}) {
       const sortTheElement = () => {
         let isPrevented = false;
         this.sortableFigures.preventedContainerClasses.forEach((cls) => {
-          const preventedParent = pointedElement.closest(
-            "." + cssClasses.containment
-          );
+          const preventedParent = pointedElement.parentElement;
           if (
             preventedParent?.classList.contains(cls) &&
             preventedParent !== sortingElement.parentElement
@@ -517,7 +515,13 @@ const getUtils = function (config = {}) {
                 let isPrevented = false;
                 this.sortableFigures.preventedContainerClasses.forEach(
                   (cls) => {
-                    if (configContainment?.classList.contains(cls)) {
+                    if (
+                      configContainment?.parentElement.classList.contains(
+                        cls
+                      ) &&
+                      this.sortableFigures.itemDetails.startedFrom.parent !==
+                        configContainment?.parentElement
+                    ) {
                       isPrevented = true;
                     }
                   }

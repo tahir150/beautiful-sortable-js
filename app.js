@@ -14,7 +14,7 @@ const sections = document.querySelectorAll("section");
     zoom: 1, // it is viewport zoom value (if have css zoom property)
     disabledClass: "disabled", // class will apply if sorting is disable
     containers: "sort-container", // comma seperated appendable boxes classes
-    preventedContainers: "another-conatiner", // comma seperated appendable boxes classes
+    preventedContainers: "another-conatiner", // comma seperated prevented boxes classes
     fallBackElement: item.classList.contains("fallback") // it is not sortable, it just append this fallback html
       ? `<div class="fallback-element">
          <span>I am fallback</span>
@@ -37,13 +37,13 @@ const sections = document.querySelectorAll("section");
   sortable.disable();
 });
 
-// Section 1
+// Section 1 - Example
 const section1Divs = sections[0]?.querySelectorAll(".sortable-container .sort");
 section1Divs.forEach((item, i) => {
   const sortable = new Sortable(item);
 });
 
-// Section 2
+// Section 2 - multiple boxes
 const section2Divs = sections[1]?.querySelectorAll(".sort");
 section2Divs.forEach((item, i) => {
   const sortable = new Sortable(item, {
@@ -51,7 +51,7 @@ section2Divs.forEach((item, i) => {
   });
 });
 
-// Section 3
+// Section 3 - containers
 const section3Divs = sections[2]?.querySelectorAll(".sort");
 section3Divs.forEach((item, i) => {
   const sortable = new Sortable(item, {
@@ -59,9 +59,20 @@ section3Divs.forEach((item, i) => {
   });
 });
 
-// Section 4
-const section4Divs = sections[3]?.querySelectorAll(".fallback");
+// Section 4 - prevented container
+const section4Divs = sections[3]?.querySelectorAll(".sort");
 section4Divs.forEach((item, i) => {
+  const sortable = new Sortable(item, {
+    containers: "sort-container,school-container", // comma seperated appendable boxes classes,
+    preventedContainers: !item.classList.contains("can-go")
+      ? "school-container"
+      : "",
+  });
+});
+
+// Section 5 - fallback
+const section5Divs = sections[4]?.querySelectorAll(".fallback");
+section5Divs.forEach((item, i) => {
   const sortable = new Sortable(item, {
     containers: "sort-container", // comma seperated appendable boxes classes,
     fallBackElement: `<div class="fallback-element">
@@ -71,20 +82,20 @@ section4Divs.forEach((item, i) => {
   });
 });
 
-// Section 5
-const section5Divs = sections[4]?.querySelectorAll(".sortable-container");
-section5Divs[0].querySelectorAll(".sort").forEach((item, i) => {
+// Section 6 - zoom
+const section6Divs = sections[5]?.querySelectorAll(".sortable-container");
+section6Divs[0].querySelectorAll(".sort").forEach((item, i) => {
   const sortable = new Sortable(item);
 });
-section5Divs[1].querySelectorAll(".sort").forEach((item, i) => {
+section6Divs[1].querySelectorAll(".sort").forEach((item, i) => {
   const sortable = new Sortable(item, {
     zoomedElement: item.closest(".containers-example"),
   });
 });
 
-// Section 6
-const section6Divs = sections[5]?.querySelectorAll(".sortable-container .sort");
-section6Divs.forEach((item, i) => {
+// Section 7 - disable
+const section7Divs = sections[6]?.querySelectorAll(".sortable-container .sort");
+section7Divs.forEach((item, i) => {
   const sortable = new Sortable(item, {
     disabledClass: "disabled",
   });
@@ -102,6 +113,8 @@ section6Divs.forEach((item, i) => {
     item.addEventListener("click", reEnable);
   }
 });
+
+// section 8 -options
 
 // Javascript code viewer
 const getCopyButton = (textToCopy = "") => {

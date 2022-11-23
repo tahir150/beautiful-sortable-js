@@ -40,7 +40,7 @@
         </div>
       </header>
 
-      <section id="simple-sortable">
+      <section id="sortable-example">
         <div class="section-head">
           <p>Simple Sortable Box</p>
         </div>
@@ -268,16 +268,137 @@
             </div>
             <div class="container-wrapper">
               <div class="wrapper-head">Should not Do</div>
-              <div class="sort-container">
-                <div class="sort sort-container border">
+              <div class="sort-container sort-appendable">
+                <div
+                  class="sort sort-container border sort-appendable sortable sortable-containment"
+                >
                   <span class="suggestion"
                     >I am container and also sortable</span
                   >
-                  <div class="sort">
+                  <div class="sort sortable">
                     <span>Sleep</span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code started -->
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+  <div class="containers-example">
+    <div class="container-wrapper">
+      <div class="wrapper-head">Should Do</div>
+      <div class="sort-container">
+        <div class="sort sort-container border">
+          <span class="suggestion"
+            >I am container and also sortable</span
+          >
+          <div class="sort">
+            <span>Awake</span>
+          </div>
+          <div class="sort">
+            <span>Eat</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-wrapper">
+      <div class="wrapper-head">Should not Do</div>
+      <div class="sort-container">
+        <div class="sort sort-container border">
+          <span class="suggestion"
+            >I am container and also sortable</span
+          >
+          <div class="sort">
+            <span>Sleep</span>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+  body {
+    background-color: #1f1f1f;
+  }
+  
+  .containers-example {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .containers-example .container-wrapper {
+    border: solid 1px #3d3d3d;
+    border-radius: 7px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .containers-example .container-wrapper .wrapper-head {
+    background-color: #000000;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .containers-example .container-wrapper .sort-container {
+    min-height: 180px;
+    border: none;
+  }
+              </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+  document.querySelectorAll(".sort").forEach(function(item){
+    const sortable = new Sortable(item, {
+      containers: "sort-container", // comma seperated appendable boxes classes,
+    });
+  });
+              </code></pre>
+            </div>
+          </div>
+        </div>
+        <!-- Code end -->
+      </section>
+
+      <section id="sortable-prevented-container">
+        <div class="section-head">
+          <p>Prevented containers</p>
+        </div>
+        <div class="section-body m-0">
+          <div class="containers-example">
+            <div class="container-wrapper">
+              <div class="wrapper-head">Home</div>
+              <div class="sort-container">
+                <div class="sort can-go">
+                  <span>I can go to School 😀</span>
+                </div>
+                <div class="sort">
+                  <span>I cannot go to School 😈</span>
+                </div>
+              </div>
+            </div>
+            <div class="container-wrapper">
+              <div class="wrapper-head">School</div>
+              <div class="school-container"></div>
             </div>
           </div>
         </div>
@@ -523,7 +644,7 @@
         <!-- Code end -->
       </section>
 
-      <section id="sortable-disable">
+      <section id="sortable-zoomed">
         <div class="section-head">
           <p>Zoomed parent Elements</p>
           <p>Apply zoom <input type="checkbox" /></p>
@@ -638,7 +759,7 @@
         </div>
       </section>
 
-      <section id="simple-sortable">
+      <section id="sortable-disabled">
         <div class="section-head">
           <p>Disabled method</p>
         </div>
@@ -740,7 +861,7 @@
         <!-- Code end -->
       </section>
 
-      <section id="sortable-fallback">
+      <section id="sortable-options">
         <div class="section-head">
           <p>Options Used</p>
         </div>
@@ -801,11 +922,15 @@
             ,
           </div>
           <div class="methods-expample">
+            <a href=""> <h3>preventedContainers</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample">
             <a href=""> <h3>disabledClass</h3></a> :
             <p>""</p>
             ,
           </div>
-          <div class="methods-expample"></div>
         </div>
       </section>
 
