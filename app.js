@@ -20,6 +20,7 @@ const sections = document.querySelectorAll("section");
          <span>I am fallback</span>
          </div>`
       : null,
+    handle: true,
     fallBackClone: false, // if will drop a clone of fallback element
     onStart: (startDetail) => {
       // it will trigger when you start sorting
@@ -114,7 +115,24 @@ section7Divs.forEach((item, i) => {
   }
 });
 
-// section 8 -options
+// Section 7 - handle
+const section8Divs = sections[7]?.querySelectorAll(".sortable-container");
+
+section8Divs[0].querySelectorAll(".sort").forEach((item, i) => {
+  const sortable = new Sortable(item, {
+    handle: true,
+  });
+});
+section8Divs[1].querySelectorAll(".sort").forEach((item, i) => {
+  const sortable = new Sortable(item, {
+    handle:
+      i % 2 !== 0
+        ? "👀"
+        : `<img style="width:50px; filter:invert(1)" src="https://img.freepik.com/free-icon/move_318-183631.jpg?w=200" />`,
+  });
+});
+
+// section 9 -options
 
 // Javascript code viewer
 const getCopyButton = (textToCopy = "") => {

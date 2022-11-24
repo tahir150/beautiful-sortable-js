@@ -14,6 +14,7 @@ const getUtils = function (config = {}) {
   return {
     cssClasses: {
       grabbingClass: "cursor-grabbing",
+      grab: "cursor-grab",
       noUserSelection: "no-user-selection",
       sortingItem: "current-sorting",
       clonedPreview: "sorting-clone-preview",
@@ -27,6 +28,7 @@ const getUtils = function (config = {}) {
       fallBackElement: "fallback-element",
       fallBackPreview: "fallback-preview",
       fallBackClone: "fallback-clone",
+      handle: "sortable-handle",
     },
     sortableFigures: {
       mouseX: 0,
@@ -59,12 +61,14 @@ const getUtils = function (config = {}) {
       },
     },
     zoomedValue: 1,
+    interval: null,
+    handle: null,
 
     injectCss() {
       const existingStyleTag = document.querySelector("[data-sortable-css]");
 
       if (!existingStyleTag) {
-        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.sortable} , .${this.cssClasses.sortable}:hover {    cursor: grab;}.${this.cssClasses.sortable}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5; pointer-events: none;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  min-heght:180px;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;}`;
+        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.grab} , .${this.cssClasses.grab}:hover {    cursor: grab;}.${this.cssClasses.grab}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5; pointer-events: none;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  min-height:180px;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;} .${this.cssClasses.handle} {    padding: 8px;position: absolute;left: 0;top: 0; display: none;} .${this.cssClasses.sortable}:hover .${this.cssClasses.handle} {display: block}`;
 
         const style = document.createElement("style");
         style.dataset.sortableCss = true;
@@ -90,6 +94,7 @@ const getUtils = function (config = {}) {
         clonedItem.style.left = left + "px";
 
         clonedItem.style.width = itemRect.width + "px";
+        clonedItem.style.height = itemRect.height + "px";
         clonedItem.style.margin = 0;
         clonedItem.style.zIndex = 1000;
         clonedItem.style.pointerEvents = "none";
@@ -106,6 +111,34 @@ const getUtils = function (config = {}) {
       return clonedPreview;
     },
 
+    appendHandleIfNeeded(element) {
+      if (config.handle) {
+        let handle = null;
+
+        if (typeof config.handle === "boolean") {
+          handle = document.createElement("div");
+          handle.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+            <polygon fill="#979797" points="130.412 323.98 78.529 272.098 240 272.098 240 433.568 188.118 381.687 165.49 404.313 256 494.823 346.51 404.313 323.882 381.687 272 433.568 272 272.098 432.667 272.098 380.784 323.98 403.412 346.607 493.921 256.098 403.412 165.588 380.784 188.215 432.667 240.098 272 240.098 272 79.432 323.882 131.313 346.51 108.687 256 18.177 165.49 108.687 188.118 131.313 240 79.432 240 240.098 78.529 240.098 130.412 188.215 107.784 165.588 17.274 256.098 107.785 346.608 130.412 323.98" class="ci-primary"/>
+          </svg>
+          `;
+          element.append(handle);
+        } else {
+          handle = this.getNode(config.handle);
+          element.append(handle);
+        }
+
+        if (config.handleClass) {
+          this.updateClass(handle, config.handleClass);
+        }
+
+        handle.parentElement.style.position = "relative";
+        handle.classList.add(this.cssClasses.handle);
+        this.handle = handle;
+        return handle;
+      }
+    },
+
     getZoomedValue() {
       const z = +(
         config.zoom ||
@@ -117,7 +150,9 @@ const getUtils = function (config = {}) {
     },
 
     throwError(e) {
-      console.error(new Error(e));
+      const error = new Error(e);
+      error.name = "SortableJS";
+      console.error(error);
     },
 
     getItemDetail(element) {
@@ -168,6 +203,27 @@ const getUtils = function (config = {}) {
       }
     },
 
+    getNode(html, cssClass) {
+      if (html) {
+        if (typeof html === "string") {
+          const div = document.createElement("div");
+          div.innerHTML = html;
+          const ele =
+            div.childNodes[0].nodeType === 3 ? div : div.childNodes[0];
+          this.updateClass(ele, cssClass);
+          return ele;
+        } else {
+          try {
+            html.classList.add(cssClass);
+            html.classList.remove(cssClass);
+          } catch (e) {
+            this.throwError("Provided Element is Not a valid HTML element");
+          }
+          return html;
+        }
+      } else return null;
+    },
+
     setInitalData(element) {
       this.updateClass(element, this.cssClasses.sortable);
       this.updateClass(element, config.itemClass);
@@ -198,19 +254,19 @@ const getUtils = function (config = {}) {
         );
       }
 
-      let fallBackElement = config.fallBackElement;
-      if (fallBackElement) {
-        if (typeof fallBackElement === "string") {
-          const div = document.createElement("div");
-          div.innerHTML = fallBackElement;
-          fallBackElement = div.childNodes[0];
-        }
-        try {
-          fallBackElement.classList.add(this.cssClasses.fallBackPreview);
-          this.sortableFigures.orignalFallback = fallBackElement;
-        } catch (e) {
-          this.throwError("Please enter valid html for fallback Element");
-        }
+      //  save fallback if needed
+      const fallBackElement = this.getNode(
+        config.fallBackElement,
+        this.cssClasses.fallBackPreview
+      );
+      this.sortableFigures.orignalFallback = fallBackElement;
+
+      // Append handle if needed
+      const appendedHandle = this.appendHandleIfNeeded(element);
+      if (appendedHandle) {
+        this.updateClass(appendedHandle, this.cssClasses.grab);
+      } else {
+        this.updateClass(element, this.cssClasses.grab);
       }
     },
 
@@ -252,7 +308,7 @@ const getUtils = function (config = {}) {
       this.sortableFigures.initial.scrollX = scrollLeft;
     },
 
-    windowScrollIdNeeded({ clientX, clientY }) {
+    windowScrollIfNeeded({ clientX, clientY }) {
       const { innerHeight, innerWidth } = window;
       const topBoundariesTouched = clientY < 50;
       const bottomBoundariesTouched = clientY > innerHeight - 50;
@@ -269,8 +325,6 @@ const getUtils = function (config = {}) {
         this.interval = null;
       }
     },
-
-    interval: null,
 
     movePreview({ event }) {
       const { pageY, pageX } = event;
@@ -303,12 +357,11 @@ const getUtils = function (config = {}) {
       // ReAssigning new value to take a difference
       this.sortableFigures.mouseY = pageY;
       this.sortableFigures.mouseX = pageX;
-      this.windowScrollIdNeeded(event);
+      this.windowScrollIfNeeded(event);
     },
 
-    sortElement({ event, sortingElement, path }) {
+    sortElement({ event, sortingElement }) {
       const { clientX: pageX, clientY: pageY } = event;
-      // const pointElements = [...path].splice(0, path.length - 2);
       const pointElements = document.elementsFromPoint(pageX, pageY);
       const cssClasses = this.cssClasses;
 
@@ -316,7 +369,17 @@ const getUtils = function (config = {}) {
         return parent === child?.parentElement;
       };
 
-      const pointedElement = pointElements[0];
+      let pointedElement = pointElements[0];
+
+      // if target is not sorting element and it's closest then target closest
+      if (!pointedElement?.classList.contains(this.cssClasses.sortable)) {
+        const closestSortable = pointedElement?.closest(
+          "." + this.cssClasses.sortable
+        );
+        if (closestSortable) {
+          pointedElement = closestSortable;
+        }
+      }
 
       const isSortableElement =
         !pointedElement?.classList.contains(cssClasses.sortingItem) &&
@@ -663,8 +726,10 @@ function Sortable(element, paramConfig = {}) {
     itemClass: "",
     draggingClass: "",
     containers: "",
+    handleClass: "",
     disabledClass: "",
     preventedContainers: "",
+    handle: false,
   };
   const config = {
     ...defaultConfig,
@@ -742,7 +807,7 @@ function Sortable(element, paramConfig = {}) {
   };
 
   // Attaching Main Listener
-  element.addEventListener("pointerdown", onMouseDown); // touch , mouse
+  (utils.handle || element).addEventListener("pointerdown", onMouseDown); // touch , mouse
 
   // Methods
   this.disable = function (disable = true) {

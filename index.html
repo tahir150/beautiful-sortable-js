@@ -861,7 +861,119 @@
         <!-- Code end -->
       </section>
 
-      <section id="sortable-options">
+      <section id="sortable-handle">
+        <div class="section-head">
+          <p>Handle method</p>
+        </div>
+        <p>Default Handle</p>
+        <div class="section-body left-m-responsive">
+          <div class="sortable-container">
+            <div class="sort">Hello I am a Element 1</div>
+            <div class="sort">Hello I am a Element 2</div>
+            <div class="sort">Hello I am a Element 3</div>
+            <div class="sort">Hello I am a Element 4</div>
+            <div class="sort">Hello I am a Element 5</div>
+          </div>
+        </div>
+        <p>Custom Handles</p>
+        <div class="section-body left-m-responsive">
+          <div class="sortable-container">
+            <div class="sort">Hello I am a Element 1</div>
+            <div class="sort">Hello I am a Element 2</div>
+            <div class="sort">Hello I am a Element 3</div>
+            <div class="sort">Hello I am a Element 4</div>
+            <div class="sort">Hello I am a Element 5</div>
+          </div>
+        </div>
+
+        <div class="example-info"></div>
+        <!-- Code started -->
+        <div class="code-preview-wrapper">
+          <div class="code-preview">
+            <div class="code-heading">HTML</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-markup">
+    <p>Default Handle</p>
+    <div class="sortable-container">
+      <div class="sort">Hello I am a Element 1</div>
+      <div class="sort">Hello I am a Element 2</div>
+      <div class="sort">Hello I am a Element 3</div>
+      <div class="sort">Hello I am a Element 4</div>
+      <div class="sort">Hello I am a Element 5</div>
+    </div>
+    <p>Custom Handles</p>
+    <div class="sortable-container">
+      <div class="sort">Hello I am a Element 1</div>
+      <div class="sort">Hello I am a Element 2</div>
+      <div class="sort">Hello I am a Element 3</div>
+      <div class="sort">Hello I am a Element 4</div>
+      <div class="sort">Hello I am a Element 5</div>
+    </div>
+            </code></pre>
+            </div>
+          </div>
+
+          <div class="code-preview">
+            <div class="code-heading">CSS</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-css">
+  body {
+    background-color: #1f1f1f;
+  }
+
+  .sortable-container {
+    width: 300px;
+    max-height: 600px;
+    border: solid #000000 1px;
+    border-radius: 7px;
+    margin: 18px 0;
+    background-color: rgb(23 23 23);
+    overflow: auto;
+    padding: 15px;
+  }
+
+  .sort {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 46px;
+    color: #747474;
+    font-size: 13px;
+    margin-top: 10px;
+    border-radius: 5px;
+    outline: solid #1f1f1f 1px;
+    background-color: rgb(26 26 26);
+  }
+                      </code></pre>
+            </div>
+          </div>
+          <div class="code-preview">
+            <div class="code-heading">Javascript</div>
+            <div class="pre-code-wrapper">
+              <pre class="code"><code class="nohighlight bs-javascript">
+  const containers = document.querySelectorAll(".sortable-container");
+
+  containers[0].querySelectorAll(".sort").forEach((item, i) => {
+    const sortable = new Sortable(item, {
+      handle: true,
+    });
+  });
+  containers[1].querySelectorAll(".sort").forEach((item, i) => {
+    const sortable = new Sortable(item, {
+      handle:
+        i % 2 !== 0
+          ? "👀"
+          : `<img style="width:50px; filter:invert(1)" src="https://img.freepik.com/free-icon/move_318-183631.jpg?w=200" />`,
+    });
+  });
+              </code></pre>
+            </div>
+          </div>
+        </div>
+        <!-- Code end -->
+      </section>
+
+      <section id="sortable-option">
         <div class="section-head">
           <p>Options Used</p>
         </div>
@@ -928,6 +1040,16 @@
           </div>
           <div class="methods-expample">
             <a href=""> <h3>disabledClass</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>handle</h3></a> :
+            <p>""</p>
+            ,
+          </div>
+          <div class="methods-expample">
+            <a href=""> <h3>handleClass</h3></a> :
             <p>""</p>
             ,
           </div>
