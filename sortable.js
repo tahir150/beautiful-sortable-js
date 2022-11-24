@@ -27,6 +27,7 @@ const getUtils = function (config = {}) {
       defaultHeight: "default-height",
       fallBackElement: "fallback-element",
       fallBackPreview: "fallback-preview",
+      disabledClass: "sortable-disabled",
       fallBackClone: "fallback-clone",
       handle: "sortable-handle",
     },
@@ -68,7 +69,7 @@ const getUtils = function (config = {}) {
       const existingStyleTag = document.querySelector("[data-sortable-css]");
 
       if (!existingStyleTag) {
-        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.grab} , .${this.cssClasses.grab}:hover {    cursor: grab;}.${this.cssClasses.grab}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5; pointer-events: none;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  min-height:180px;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;} .${this.cssClasses.handle} {    padding: 8px;position: absolute;left: 0;top: 0; display: none;} .${this.cssClasses.sortable}:hover .${this.cssClasses.handle} {display: block}`;
+        const css = `.${this.cssClasses.containment} {scroll-behavior: smooth;}.${this.cssClasses.sortable} {touch-action:none;}.${this.cssClasses.grab}:not(.${this.cssClasses.disabledClass}) , .${this.cssClasses.grab}:not(.${this.cssClasses.disabledClass}):hover {    cursor: grab;}.${this.cssClasses.grab}.${this.cssClasses.grabbingClass}:hover {    cursor: grabbing;}.${this.cssClasses.noUserSelection} , .${this.cssClasses.noUserSelection} * {    user-select: none !important;}.${this.cssClasses.sortMoving} {    background: #00000094 !important;    opacity: 0.5; pointer-events: none;}.${this.cssClasses.sortMoving} *{    opacity: 0 !important;}.${this.cssClasses.cloneMoving} {    opacity: 0.7;}.${this.cssClasses.appendableClasss} {  min-height:180px;}.${this.cssClasses.defaultHeight} , .${this.cssClasses.containment} {  padding: 8px;} .${this.cssClasses.handle} {    padding: 8px;position: absolute;left: 0;top: 0; display: none;} .${this.cssClasses.sortable}:hover .${this.cssClasses.handle} {display: block}`;
 
         const style = document.createElement("style");
         style.dataset.sortableCss = true;
@@ -718,6 +719,7 @@ function Sortable(element, paramConfig = {}) {
   const defaultConfig = {
     containment: null,
     zoom: undefined,
+    fallBackElement: null,
     fallBackClone: true,
     zoomedElement: null,
     onStart: () => {},
@@ -818,12 +820,14 @@ function Sortable(element, paramConfig = {}) {
         if (config.disabledClass) {
           element.classList.add(config.disabledClass);
         }
+        element.classList.add(utils.cssClasses.disabledClass);
       } else {
         element.addEventListener("pointerdown", onMouseDown);
         element.classList.add(utils.cssClasses.sortable);
         if (config.disabledClass) {
           element.classList.remove(config.disabledClass);
         }
+        element.classList.remove(utils.cssClasses.disabledClass);
       }
     } else {
       console.error(
