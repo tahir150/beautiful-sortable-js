@@ -1030,151 +1030,140 @@
           <p>Options Used</p>
         </div>
         <div class="section-body m-0">
-          <div class="methods-expample">
-            <h3>containment</h3>
-            :
-            <p>null</p>
-            ,
-          </div>
-          <div class="methods-expample" id="zoom-option">
-            <h3>zoom</h3>
-            :
-            <p>undefined</p>
-            ,
-          </div>
-          <div class="methods-expample" id="fallbackelement-option">
-            <h3>fallBackElement</h3>
-            :
-            <p>true</p>
-            ,
-          </div>
-          <div class="methods-expample" id="fallbackClone-option">
-            <h3>fallBackClone</h3>
-            :
-            <p>true</p>
-            ,
-          </div>
-          <div class="methods-expample" id="zoomed-element-option">
-            <h3>zoomedElement</h3>
-            :
-            <p>null</p>
-            ,
-          </div>
-          <div class="methods-expample">
-            <h3>onStart</h3>
-            :
-            <p>() => {}</p>
-            ,
-          </div>
-          <div class="methods-expample">
-            <h3>onSort</h3>
-            :
-            <p>() => {}</p>
-            ,
-          </div>
-          <div class="methods-expample">
-            <h3>onDrop</h3>
-            :
-            <p>() => {}</p>
-            ,
-          </div>
-          <div class="methods-expample">
-            <h3>itemClass</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
-          <div class="methods-expample">
-            <h3>draggingClass</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
-          <div class="methods-expample" id="containers-option">
-            <h3>containers</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
-          <div class="methods-expample" id="prevented-container-option">
-            <h3>preventedContainers</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
-          <div class="methods-expample" id="disabled-class-option">
-            <h3>disabledClass</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
-          <div class="methods-expample" id="handle-option">
-            <h3>handle</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
-          <div class="methods-expample" id="handle-class-option">
-            <h3>handleClass</h3>
-            :
-            <p>""</p>
-            ,
-          </div>
+          <table>
+            <thead>
+              <th>Options</th>
+              <th>Description</th>
+            </thead>
+            <tbody>
+              <tr id="containers-option">
+                <td>containers</td>
+                <td>
+                  It receives comma seperated classes like
+                  "my-container,another-container" for container.It makes the
+                  div appendable.While sorting the element any sortable can be
+                  append into container, to prevent sort to append,the
+                  preventedContainers option will required in sortable's option.
+                </td>
+              </tr>
+              <tr id="prevented-container-option">
+                <td>preventedContainers</td>
+                <td>
+                  It also recieves comma seperated classes for the container,
+                  every sortable element can decide,It have to be drop in
+                  container or not.
+                </td>
+              </tr>
+              <tr id="zoom-option">
+                <td>zoom</td>
+                <td>
+                  It receives number value of zoom, defaults to 1.CSS zoom
+                  property value ranges between 0-1 for small scale and greater
+                  then 1 for large scale.if your container has zoom then this
+                  option should use to prevent sorting issues.
+                </td>
+              </tr>
+              <tr id="zoomed-element-option">
+                <td>zoomedElement</td>
+                <td>
+                  It also receives number value of zoom, defaults to 1.It is a
+                  recommended method to utilize, if sorting parent has zoom,it
+                  will watch the element if zoom changes or not so there is no
+                  chance to disturb sorting.
+                </td>
+              </tr>
+              <tr id="fallbackelement-option">
+                <td>fallBackElement</td>
+                <td>
+                  It recieves html string element or DOM element,defaults to
+                  null.It will drop the fallback element instead of real sorting
+                  element.It works only for another container and sortable for
+                  same container.
+                </td>
+              </tr>
+              <tr id="fallbackClone-option">
+                <td>fallBackClone</td>
+                <td>
+                  it receives boolean true | false.defaults to true.By default
+                  it drops a clone of provided fallback element.if it's
+                  fallbackClone value is false,It will not drop a clone.It drop
+                  single element for every drop.
+                </td>
+              </tr>
+              <tr id="handle-option">
+                <td>handle</td>
+                <td>
+                  It recieves boolen Or html string or DOM element for
+                  handle.Defaults to false.By default it works on clicking on
+                  any area of sortable,but if it receives true, it will apply
+                  default handles so mouse will have to be click on handle for
+                  sorting purpose.If it receive any element, the element will
+                  work as handle
+                </td>
+              </tr>
+              <tr id="handle-class-option">
+                <td>handleClass</td>
+                <td>
+                  it recieves string class to apply on handle.any customization
+                  for handle can be handled from css through provided class.
+                </td>
+              </tr>
+              <tr id="onstart-option">
+                <td>onStart</td>
+                <td>
+                  It receives callback funtion.The function will invoked if user
+                  starts sorting any element.It gives itemdetails in parameter
+                  of callback.
+                </td>
+              </tr>
+              <tr id="onsort-option">
+                <td>onSort</td>
+                <td>
+                  It receives callback funtion.SortableJS call this function if
+                  item has been succesfully sorted.It gives itemdetails in
+                  parameter of callback.
+                </td>
+              </tr>
+              <tr id="ondrop-option">
+                <td>onDrop</td>
+                <td>
+                  It receives callback funtion.SortableJS call this function for
+                  every drop,even if item is sorted or not.Item details can be
+                  found in it's paramter
+                </td>
+              </tr>
+              <tr id="itemclass-option">
+                <td>itemClass</td>
+                <td>
+                  It receives string class,The class will apply for sortable
+                  element.
+                </td>
+              </tr>
+              <tr id="draggingclass-option">
+                <td>draggingClass</td>
+                <td>
+                  It also receives class.The class will apply if item starts
+                  moving for sorting.
+                </td>
+              </tr>
+              <tr id="disabled-option">
+                <td>.disbale()</td>
+                <td>
+                  this method is returned from new Sortable() method.any item
+                  can be disabled for sorting through this method
+                </td>
+              </tr>
+              <tr id="disabled-class-option">
+                <td>disabledClass</td>
+                <td>
+                  if item is disabled , the provided class will apply until the
+                  item is re-enable
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
-
-      <!-- <div class="sort sort-container border">
-        <span class="suggestion"
-          >I am container and also sortable</span
-        >
-      </div> -->
-      <!-- <section>
-        <div class="sortable-container">
-          <div class="sort fallback">
-            <span>F - Hello I am a Element 10</span>
-          </div>
-          <div class="sort sort-container">
-            <div class="sort">
-              <span>Hello I am a Element 1</span>
-            </div>
-          </div>
-        </div>
-      </section> -->
-
-      <!-- <section id="sortable-fallback">
-        <div class="section-head ">
-          <p>Fallback Elements</p>
-        </div>
-        <div class="section-body m-0">
-          <div class="containers-example"></div>
-        </div>
-
-        <div class="code-preview-wrapper">
-          <div class="code-preview">
-            <div class="code-heading">HTML</div>
-
-            <div class="pre-code-wrapper">
-              <pre class="code"><code class="nohighlight bs-markup">
-            </code></pre>
-            </div>
-          </div>
-
-          <div class="code-preview">
-            <div class="code-heading">CSS</div>
-            <div class="pre-code-wrapper">
-              <pre class="code"><code class="nohighlight bs-css">
-              </code></pre>
-            </div>
-          </div>
-          <div class="code-preview">
-            <div class="code-heading">Javascript</div>
-            <div class="pre-code-wrapper">
-              <pre class="code"><code class="nohighlight bs-javascript">
-              </code></pre>
-            </div>
-          </div>
-        </div>
-      </section> -->
     </div>
 
     <script src="./sortable.js"></script>

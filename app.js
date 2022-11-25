@@ -133,6 +133,28 @@ section8Divs[1].querySelectorAll(".sort").forEach((item, i) => {
 });
 
 // section 9 -options
+// options viewer
+const highlight = (tr) => {
+  // after scroll
+  if (tr) {
+    setTimeout(() => {
+      tr.style.background = "#03668b";
+      tr.style.transition = "0.3s";
+      // reset
+      setTimeout(() => {
+        tr.style.background = "";
+      }, 500);
+    }, 800);
+  }
+};
+
+document.querySelectorAll("a[href*='#']").forEach((a) => {
+  a.onclick = () => {
+    const id = a.href?.split("#").pop();
+    const tr = document.getElementById(id)?.closest("tr");
+    highlight(tr);
+  };
+});
 
 // Javascript code viewer
 const getCopyButton = (textToCopy = "") => {
@@ -188,4 +210,6 @@ document.addEventListener("DOMContentLoaded", () => {
         container.style.zoom = "";
       }
     });
+  // if url has hashtag then highlight option
+  highlight(document.querySelector(window.location.hash)?.closest("tr"));
 });

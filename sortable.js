@@ -717,7 +717,6 @@ function Sortable(element, paramConfig = {}) {
 
   // Configs
   const defaultConfig = {
-    containment: null,
     zoom: undefined,
     fallBackElement: null,
     fallBackClone: true,
